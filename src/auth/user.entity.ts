@@ -24,6 +24,7 @@ export class User extends Model {
     @Column
     phone: string;
 
+    @Unique({ name: 'unique_email_err', msg: 'Email already exists' })
     @Column
     email: string;
 

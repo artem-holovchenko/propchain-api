@@ -1,7 +1,9 @@
 import { IsEmail, IsPhoneNumber, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
-export class AuthSingupDto {
-    
+export class AuthSignupDto {
+
+    id: string;
+
     @IsString()
     @MinLength(4)
     @MaxLength(20)
@@ -30,4 +32,6 @@ export class AuthSingupDto {
         message: 'password is too weak'
     })
     password: string;
+
+    salt: string;
 }
