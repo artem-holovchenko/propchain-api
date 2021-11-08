@@ -11,9 +11,9 @@ export const databaseProviders = [
                 port: 5432,
                 username: 'postgres',
                 password: 'postgres',
-                database: 'propchain-app',
-            });  
-            sequelize.addModels([User]);         
+                database: 'propchain-api',
+            });
+            sequelize.addModels([User]);
             await sequelize.sync();
             return sequelize;
         },
