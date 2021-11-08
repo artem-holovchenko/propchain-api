@@ -12,10 +12,10 @@ export class User extends Model {
     id: string;
 
     @Column
-    first_name: string;
+    firstName: string;
 
     @Column
-    last_name: string;
+    lastName: string;
 
     @Unique({ name: 'unique_username_err', msg: 'Username already exists' })
     @Column
