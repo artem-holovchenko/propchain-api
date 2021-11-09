@@ -1,5 +1,6 @@
 import { Table, Model, Column, Unique } from 'sequelize-typescript';
 import { DataTypes } from "sequelize";
+import { Role } from './role.enum';
 
 @Table
 export class User extends Model {
@@ -33,4 +34,7 @@ export class User extends Model {
 
     @Column
     salt: string;
+
+    @Column
+    role: Role;
 }
