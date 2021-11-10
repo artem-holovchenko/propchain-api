@@ -1,26 +1,27 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { IUser } from './interfaces/user.interface';
-import { UsersRepository } from './users.repository';
+import { AuthRepository } from './auth.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from './role.enum';
+import { UsersRepository } from 'src/users/users.repository';
+import { IUser } from 'src/users/interfaces/user.interface';
 
 @Injectable()
 export class AuthService {
     constructor(
+        private authRepository: AuthRepository,
         private usersRepository: UsersRepository,
         private jwtService: JwtService,
     ) { }
 
-    async signUp(iUser: IUser): Promise<IUser> {
-        return this.usersRepository.createUser(iUser);
+    async signUp(user: IUser): Promise<IUser> {
+        return this.authRepository.createUser(user);
     }
 
-    async signIn(iUser: IUser): Promise<{ accessToken: string }> {
-        const user = await this.usersRepository.getUserByEmail(iUser);
-        const { email } = iUser;
-        if (user && (await bcrypt.compare(iUser.password, user.password))) {
+    async signIn(user: IUser): Promise<{ accessToken: string }> {
+        const gUser = await this.usersRepository.getUserByEmail(user);
+        const { email } = user;
+        if (gUser && (await bcrypt.compare(user.password, gUser.password))) {
             const payload: JwtPayload = { email };
             const accessToken: string = await this.jwtService.sign(payload);
             return { accessToken };
@@ -29,20 +30,6 @@ export class AuthService {
             throw new UnauthorizedException('Please check your login credentials');
         }
     }
-
-    async getUserByEmail(iUser: IUser): Promise<IUser> {
-        return this.usersRepository.getUserByEmail(iUser);
-    }
-
-    async getUserById(iUser: IUser): Promise<IUser> {
-        return this.usersRepository.getUserById(iUser);
-    }
-
-    async updateRole(iUser: IUser, role: Role): Promise<IUser> {
-        return this.usersRepository.updateRole(iUser, role);
-    }
-
-
 }
 
 

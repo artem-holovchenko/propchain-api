@@ -1,18 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { CreatedUserDto } from 'src/auth/dto/createdUser.dto';
+import { IUser } from 'src/users/interfaces/user.interface';
 import { AuthService } from './auth.service';
-import { Roles } from './decorators/roles.decorator';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthSignupDto } from './dto/auth-signup.dto';
-import { CreatedUserDto } from './dto/createdUser.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { UserIdDto } from './dto/userId.dto';
-import { IUser } from './interfaces/user.interface';
-import { Role } from './role.enum';
 
 @ApiTags('auth')
-@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) { }
@@ -33,17 +27,4 @@ export class AuthController {
         return this.authService.signIn(authLoginDto);
     }
 
-    @UseGuards(AuthGuard())
-    @Get('/:id')
-    @Roles(Role.User)
-    getUserById(@Param() userIdDto: UserIdDto): Promise<IUser> {
-        return this.authService.getUserById(userIdDto);
-    }
-
-    @UseGuards(AuthGuard())
-    @Patch('/:id/role')
-    async updateRole(@Param() userIdDto: UserIdDto, @Body() updateRoleDto: UpdateRoleDto): Promise<IUser> {
-        const { role } = updateRoleDto;
-        return this.authService.updateRole(userIdDto, role);
-    }
 }
