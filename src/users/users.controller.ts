@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { GetUserDto } from './dto/get-user.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { UserIdDto } from './dto/userId.dto';
 import { IUser } from './interfaces/user.interface';
@@ -18,12 +19,14 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.Admin)
     @Get('/:id')
+    @ApiOkResponse({ type: GetUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     getUserById(@Param() userIdDto: UserIdDto): Promise<IUser> {
         return this.usersService.getUserById(userIdDto);
     }
 
     @Patch('/:id/role')
+    @ApiOkResponse({ type: GetUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     async updateRole(@Param() userIdDto: UserIdDto, @Body() updateRoleDto: UpdateRoleDto): Promise<IUser> {
         const { role } = updateRoleDto;
