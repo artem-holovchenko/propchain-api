@@ -5,6 +5,7 @@ import { IUser } from 'src/users/interfaces/user.interface';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthSignupDto } from './dto/auth-signup.dto';
+import { TokenDto } from './dto/token.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -19,7 +20,7 @@ export class AuthController {
     }
 
     @Post('/signin')
-    @ApiOkResponse({ description: 'Login successful.' })
+    @ApiOkResponse({ type: TokenDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     signIn(
         @Body() authLoginDto: AuthLoginDto,
