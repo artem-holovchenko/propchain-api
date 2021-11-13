@@ -9,5 +9,8 @@ export class CreatedUserDto {
     email: string;
 
     @ApiProperty()
+    emailIsVerified: boolean;
+
+    @ApiProperty()
     role: Role;
 }

@@ -9,9 +9,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt-strategy';
 import { UsersModule } from 'src/users/users.module';
 import { UsersRepository } from 'src/users/users.repository';
+import { EmailModule } from 'src/email/email.module';
+import { EmailRepository } from 'src/email/email.repository';
 
 @Module({
   imports: [
+    EmailModule,
     UsersModule,
     DatabaseModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -26,6 +29,7 @@ import { UsersRepository } from 'src/users/users.repository';
     JwtStrategy,
     AuthRepository,
     AuthService,
+    EmailRepository,
     UsersRepository,
     ...usersProviders,
   ],

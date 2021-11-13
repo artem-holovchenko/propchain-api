@@ -27,4 +27,10 @@ export class UsersRepository {
         const fUser = await this.getUserById(user);
         return fUser;
     }
+
+    async updateEmail(user: IUser): Promise<IUser> {
+        await this.usersRepository.update({ emailIsVerified: true }, { where: { id: user.id } });
+        const fUser = await this.getUserById(user);
+        return fUser;
+    }
 }

@@ -35,6 +35,12 @@ export class User extends Model {
     @Column
     salt: string;
 
+    @Column({defaultValue: false})
+    emailIsVerified: boolean;
+
+    @Column({defaultValue: false})
+    isUsaCitizen: boolean;
+
     @Column
     role: Role;
 }
