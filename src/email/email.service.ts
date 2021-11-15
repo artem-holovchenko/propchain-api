@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { IUser } from 'src/users/interfaces/user.interface';
 import { EmailRepository } from './email.repository';
 import { IEmailToken } from './interfaces/email-token.interface';
 

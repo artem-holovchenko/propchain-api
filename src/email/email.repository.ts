@@ -16,11 +16,10 @@ export class EmailRepository {
     async sendEmail(user: IUser): Promise<void> {
         const token = await this.generateEmailToken(user);
         const mailgun = require("mailgun-js");
-        const DOMAIN = "sandbox8aca5e346d8e47b5b41816c6fdfec1d5.mailgun.org";
-        const mg = mailgun({ apiKey: "2a00cbf2d0336ace88a1f3a0ef0a472f-30b9cd6d-4b4086c3", domain: DOMAIN });
-        const href = `http://localhost:3000/email/verification/${token.accessToken}`;
+        const mg = mailgun({ apiKey: process.env.MG_API, domain: process.env.MG_DOMAIN });
+        const href = `${process.env.LOCALHOST_URL}/email/verification/${token.accessToken}`;
         const data = {
-            from: "Propchain <postmaster@sandbox8aca5e346d8e47b5b41816c6fdfec1d5.mailgun.org>",
+            from: `Propchain <${process.env.MG_EMAIL}>`,
             to: user.email,
             subject: "Email confirmation",
             template: "email-confirmation",
