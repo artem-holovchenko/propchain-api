@@ -22,9 +22,13 @@ export class AuthService {
         const gUser = await this.usersRepository.getUserByEmail(user);
         const { email } = user;
         if (gUser && (await bcrypt.compare(user.password, gUser.password))) {
-            const payload: JwtPayload = { email };
-            const accessToken: string = await this.jwtService.sign(payload);
-            return { accessToken };
+            if (gUser.emailIsVerified == true) {
+                const payload: JwtPayload = { email };
+                const accessToken: string = await this.jwtService.sign(payload);
+                return { accessToken };
+            } else {
+                throw new UnauthorizedException('Please confirm your email');
+            }
         }
         else {
             throw new UnauthorizedException('Please check your login credentials');

@@ -3,13 +3,15 @@ import { User } from "../users/user.entity";
 import * as bcrypt from 'bcrypt';
 import { Role } from "./role.enum";
 import { IUser } from "src/users/interfaces/user.interface";
+import { EmailRepository } from "src/email/email.repository";
 
 @Injectable()
 export class AuthRepository {
 
     constructor(
-       @Inject('USERS_REPOSITORY')
-       private usersRepository: typeof User
+        @Inject('USERS_REPOSITORY')
+        private usersRepository: typeof User,
+        private emailRepository: EmailRepository,
     ) { }
 
     async createUser(user: IUser): Promise<IUser> {
@@ -24,8 +26,12 @@ export class AuthRepository {
                 email: user.email,
                 password: hashedPassword,
                 salt: gen_salt,
+                emailIsVerified: user.emailIsVerified,
+                isUsaCitizen: user.isUsaCitizen,
                 role: Role.User,
             });
+
+            await this.emailRepository.sendEmail(nUser);
 
             const rUser = {
                 username: nUser.username,
