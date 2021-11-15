@@ -11,7 +11,6 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { UserIdDto } from './dto/userId.dto';
 import { IUser } from './interfaces/user.interface';
 import { UsersService } from './users.service';
-import { EmailService } from 'src/email/email.service';
 import { UserEmailDto } from './dto/user-email.dto';
 
 @ApiTags('users')
@@ -19,6 +18,20 @@ import { UserEmailDto } from './dto/user-email.dto';
 @Controller('users')
 export class UsersController {
     constructor(private usersService: UsersService) { }
+
+    @Get('/resetPassword')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    confirmResetPassword(@Body() userEmailDto: UserEmailDto): Promise<void> {
+        return this.usersService.confirmResetPassword(userEmailDto);
+    }
+
+    @Get('/setPassword/:token')
+    @Redirect(process.env.SIGN_IN_URL)
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    resetPassword(@Param() idTokenDto: UserIdToken, @Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
+        const { password } = resetPasswordDto;
+        return this.usersService.resetPassword(idTokenDto, password);
+    }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.Admin)
@@ -36,26 +49,4 @@ export class UsersController {
         const { role } = updateRoleDto;
         return this.usersService.updateRole(userIdDto, role);
     }
-
-    @Get('/resetPassword')
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    confirmResetPassword(@Body() userEmailDto: UserEmailDto): Promise<void> {
-        return this.usersService.confirmResetPassword(userEmailDto);
-    }
-
-    @Get('/setPassword/:token')
-    @Redirect(process.env.SIGN_IN_URL)
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    resetPassword(@Param() idTokenDto: UserIdToken, @Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
-        const { password } = resetPasswordDto;
-        return this.usersService.resetPassword(idTokenDto, password);
-    }
 }
-
-    // @Patch('/:id/password')
-    // @ApiOkResponse({ type: GetUserDto })
-    // @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    // async resetPassword(@Param() userIdDto: UserIdDto, @Body() resetPasswordDto: ResetPasswordDto): Promise<IUser> {
-    //     const { password } = resetPasswordDto;
-    //     return this.usersService.resetPassword(userIdDto, password);
-    // }

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { IUser } from "./interfaces/user.interface";
 import { Role } from "../auth/role.enum";
 import { User } from "./user.entity";
@@ -13,7 +13,8 @@ export class UsersRepository {
     constructor(
         @Inject('USERS_REPOSITORY')
         private usersDBRepository: typeof User,
-        private emailRepositoryUsers: EmailRepository, //Не импортируется
+        @Inject(forwardRef(() => EmailRepository))
+        private emailRepositoryUsers: EmailRepository,
         private jwtService: JwtService,
     ) { }
     async getUserByEmail(user: IUser): Promise<IUser> {

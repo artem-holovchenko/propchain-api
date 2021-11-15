@@ -7,11 +7,13 @@ import { DatabaseModule } from 'src/database.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt-strategy';
-import { UsersRepository } from 'src/users/users.repository';
-import { EmailRepository } from 'src/email/email.repository';
+import { UsersModule } from 'src/users/users.module';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
+    UsersModule,
+    EmailModule,
     DatabaseModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
@@ -25,8 +27,6 @@ import { EmailRepository } from 'src/email/email.repository';
     JwtStrategy,
     AuthRepository,
     AuthService,
-    UsersRepository,
-    EmailRepository,
     ...usersProviders,
   ],
   controllers: [AuthController],
