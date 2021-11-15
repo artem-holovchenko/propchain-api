@@ -6,16 +6,13 @@ export const databaseProviders = [
     {
         provide: 'SEQUELIZE',
         useFactory: async () => {
-            const sequelize = new Sequelize(process.env.DATABASE_URL, {
+            const sequelize = new Sequelize({
                 dialect: process.env.DIALECT_DB as Dialect,
                 host: process.env.HOST_DB,
                 port: +process.env.PORT_DB,
-                dialectOptions: {
-                    ssl: {
-                        require: true,
-                        rejectUnauthorized: false,
-                    }
-                },               
+                username: process.env.USERNAME_DB,
+                password: process.env.PASS_DB,
+                database: process.env.DB,
             });
             sequelize.addModels([User]);
             await sequelize.sync();

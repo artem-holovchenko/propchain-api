@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { IUser } from "src/users/interfaces/user.interface";
 import { UsersRepository } from "src/users/users.repository";
@@ -13,7 +13,7 @@ export class EmailRepository {
         private jwtService: JwtService,
     ) { }
 
-    async sendEmail(user: IUser): Promise<void> {
+    async sendEmailConfirm(user: IUser): Promise<void> {
         const token = await this.generateEmailToken(user);
         const mailgun = require("mailgun-js");
         const mg = mailgun({ apiKey: process.env.MG_API, domain: process.env.MG_DOMAIN });
@@ -23,6 +23,24 @@ export class EmailRepository {
             to: user.email,
             subject: "Email confirmation",
             template: "email-confirmation",
+            'v:href': href,
+        };
+        await mg.messages().send(data, function (error, body) {
+            console.log(body);
+        });
+
+    }
+
+    async sendResetPassword(user: IUser): Promise<void> {
+        const token = await this.generateEmailToken(user);
+        const mailgun = require("mailgun-js");
+        const mg = mailgun({ apiKey: process.env.MG_API, domain: process.env.MG_DOMAIN });
+        const href = `${process.env.LOCALHOST_URL}/users/setPassword/${token.accessToken}`;
+        const data = {
+            from: `Propchain <${process.env.MG_EMAIL}>`,
+            to: user.email,
+            subject: "Password reset",
+            template: "password-reset",
             'v:href': href,
         };
         await mg.messages().send(data, function (error, body) {
@@ -46,6 +64,6 @@ export class EmailRepository {
         const gUser = await this.usersRepository.getUserById(gId);
         if (gUser) {
             await this.usersRepository.updateEmail(gUser);
-        }
+       }
     }
 }

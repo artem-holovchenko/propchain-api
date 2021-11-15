@@ -10,7 +10,7 @@ import { IUser } from 'src/users/interfaces/user.interface';
 export class AuthService {
     constructor(
         private authRepository: AuthRepository,
-        private usersRepository: UsersRepository,
+        private usersRepositoryAuth: UsersRepository,
         private jwtService: JwtService,
     ) { }
 
@@ -19,7 +19,7 @@ export class AuthService {
     }
 
     async signIn(user: IUser): Promise<{ accessToken: string }> {
-        const gUser = await this.usersRepository.getUserByEmail(user);
+        const gUser = await this.usersRepositoryAuth.getUserByEmail(user);
         const { email } = user;
         if (gUser && (await bcrypt.compare(user.password, gUser.password))) {
             if (gUser.emailIsVerified == true) {
