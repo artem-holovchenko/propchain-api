@@ -10,15 +10,15 @@ export class AuthRepository {
 
     constructor(
         @Inject('USERS_REPOSITORY')
-        private usersRepository: typeof User,
-        private emailRepository: EmailRepository,
+        private usersDBRepositoryAuth: typeof User,
+        private emailRepositoryAuth: EmailRepository,
     ) { }
 
     async createUser(user: IUser): Promise<IUser> {
         const gen_salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(user.password, gen_salt);
         try {
-            const nUser = await this.usersRepository.create({
+            const nUser = await this.usersDBRepositoryAuth.create({
                 firstName: user.firstName,
                 lastName: user.lastName,
                 username: user.username,
@@ -31,7 +31,7 @@ export class AuthRepository {
                 role: Role.User,
             });
 
-            await this.emailRepository.sendEmail(nUser);
+            await this.emailRepositoryAuth.sendEmailConfirm(nUser);
 
             const rUser = {
                 username: nUser.username,

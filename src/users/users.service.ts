@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
+import { IUserIdToken } from './interfaces/userId-token.dto';
 
 @Injectable()
 export class UsersService {
@@ -19,5 +20,13 @@ export class UsersService {
 
     async updateRole(user: IUser, role: Role): Promise<IUser> {
         return this.usersRepository.updateRole(user, role);
+    }
+
+    async confirmResetPassword(user: IUser): Promise<void> {
+        return this.usersRepository.confirmResetPassword(user);
+    }
+
+    async resetPassword(userIdToken: IUserIdToken, password: string): Promise<void> {
+        return this.usersRepository.resetPassword(userIdToken, password);
     }
 }
