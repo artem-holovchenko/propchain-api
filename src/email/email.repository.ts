@@ -25,9 +25,17 @@ export class EmailRepository {
             template: "email-confirmation",
             'v:href': href,
         };
-        await mg.messages().send(data, function (error, body) {
-            console.log(body);
-        });
+        
+        const sendMessages = function (data) {
+            return new Promise((resolve, reject) => {
+                mg.messages().send(data, (error, body) => {
+                    if (error) reject(error)
+                    else resolve(body);
+                });
+            })
+        }
+
+        await sendMessages(data).then(body => console.log(body));
 
     }
 
@@ -35,7 +43,7 @@ export class EmailRepository {
         const token = await this.generateEmailToken(user);
         const mailgun = require("mailgun-js");
         const mg = mailgun({ apiKey: process.env.MG_API, domain: process.env.MG_DOMAIN });
-        const href = `${process.env.LOCALHOST_URL}/users/setPassword/${token.accessToken}`;
+        const href = `${process.env.LOCALHOST_URL}/users/confirmPasswordChange/${token.accessToken}`;
         const data = {
             from: `Propchain <${process.env.MG_EMAIL}>`,
             to: user.email,
@@ -43,10 +51,17 @@ export class EmailRepository {
             template: "password-reset",
             'v:href': href,
         };
-        await mg.messages().send(data, function (error, body) {
-            console.log(body);
-        });
 
+        const sendMessages = function (data) {
+            return new Promise((resolve, reject) => {
+                mg.messages().send(data, (error, body) => {
+                    if (error) reject(error)
+                    else resolve(body);
+                });
+            })
+        }
+
+        await sendMessages(data).then(body => console.log(body));
     }
 
     async generateEmailToken(user: IUser): Promise<{ accessToken: string }> {
@@ -64,6 +79,6 @@ export class EmailRepository {
         const gUser = await this.usersRepository.getUserById(gId);
         if (gUser) {
             await this.usersRepository.updateEmail(gUser);
-       }
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Redirect, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Redirect, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -19,13 +19,13 @@ import { UserEmailDto } from './dto/user-email.dto';
 export class UsersController {
     constructor(private usersService: UsersService) { }
 
-    @Get('/resetPassword')
+    @Post('/requestPasswordChange')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     confirmResetPassword(@Body() userEmailDto: UserEmailDto): Promise<void> {
         return this.usersService.confirmResetPassword(userEmailDto);
     }
 
-    @Get('/setPassword/:token')
+    @Post('/confirmPasswordChange/:token')
     @Redirect(process.env.SIGN_IN_URL)
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     resetPassword(@Param() idTokenDto: UserIdToken, @Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
