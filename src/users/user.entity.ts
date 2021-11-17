@@ -43,4 +43,7 @@ export class User extends Model {
 
     @Column
     role: Role;
+
+    @Column
+    avatarFileId: string;
 }

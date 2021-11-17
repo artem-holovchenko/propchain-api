@@ -29,4 +29,8 @@ export class UsersService {
     async resetPassword(userIdToken: IUserIdToken, password: string): Promise<void> {
         return this.usersRepository.resetPassword(userIdToken, password);
     }
+
+    async uploadAvatar(user:IUser, file:Express.Multer.File):Promise<void> {
+        return this.usersRepository.uploadAvatar(user, file);
+    }
 }

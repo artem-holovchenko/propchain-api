@@ -54,4 +54,27 @@ export class UsersRepository {
         const fUser = await this.getUserByEmail(user);
         if (fUser) await this.emailRepositoryUsers.sendResetPassword(fUser);
     }
+
+    async uploadAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
+        const cloudinary = require("cloudinary").v2;
+        cloudinary.config({
+            cloud_name: process.env.CLOUD_NAME,
+            api_key: process.env.API_KEY,
+            api_secret: process.env.API_SECRET,
+        });
+
+        await cloudinary.uploader.upload(file.path)
+            .then((result) => {
+                console.log("success", JSON.stringify(result, null, 2));
+                this.setAvatar(user, result.public_id)
+            })
+            .catch(error => {
+                console.log("error", JSON.stringify(error, null, 2));
+            });
+    }
+
+    async setAvatar(user: IUser, fileId: string): Promise<void> {
+        const fUser = await this.getUserById(user);
+        if (fUser) await this.usersDBRepository.update({ avatarFileId: fileId }, { where: { id: fUser.id } });
+    }
 }
