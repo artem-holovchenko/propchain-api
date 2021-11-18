@@ -3,11 +3,13 @@ import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
 import { IUserIdToken } from './interfaces/userId-token.dto';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class UsersService {
     constructor(
-        private usersRepository: UsersRepository
+        private usersRepository: UsersRepository,
+        private usersEmailService: EmailService,
     ) { }
 
     async getUserByEmail(user: IUser): Promise<IUser> {
@@ -23,14 +25,12 @@ export class UsersService {
     }
 
     async confirmResetPassword(user: IUser): Promise<void> {
-        return this.usersRepository.confirmResetPassword(user);
+        const fUser = await this.getUserByEmail(user);
+        if (fUser) await this.usersEmailService.sendResetPassword(fUser);
     }
 
     async resetPassword(userIdToken: IUserIdToken, password: string): Promise<void> {
         return this.usersRepository.resetPassword(userIdToken, password);
     }
 
-    async uploadAvatar(user:IUser, file:Express.Multer.File):Promise<void> {
-        return this.usersRepository.uploadAvatar(user, file);
-    }
 }

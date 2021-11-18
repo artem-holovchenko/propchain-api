@@ -3,7 +3,7 @@ import { User } from "../users/user.entity";
 import * as bcrypt from 'bcrypt';
 import { Role } from "./role.enum";
 import { IUser } from "src/users/interfaces/user.interface";
-import { EmailRepository } from "src/email/email.repository";
+import { EmailService } from "src/email/email.service";
 
 @Injectable()
 export class AuthRepository {
@@ -11,7 +11,7 @@ export class AuthRepository {
     constructor(
         @Inject('USERS_REPOSITORY')
         private usersDBRepositoryAuth: typeof User,
-        private emailRepositoryAuth: EmailRepository,
+        private emailServiceAuth: EmailService,
     ) { }
 
     async createUser(user: IUser): Promise<IUser> {
@@ -31,7 +31,7 @@ export class AuthRepository {
                 role: Role.User,
             });
 
-            await this.emailRepositoryAuth.sendEmailConfirm(nUser);
+            await this.emailServiceAuth.sendEmailConfirm(nUser);
 
             const rUser = {
                 username: nUser.username,

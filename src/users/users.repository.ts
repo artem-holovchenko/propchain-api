@@ -1,11 +1,10 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { IUser } from "./interfaces/user.interface";
 import { Role } from "../auth/role.enum";
 import { User } from "./user.entity";
 import * as bcrypt from 'bcrypt';
 import { IUserIdToken } from "./interfaces/userId-token.dto";
 import { JwtService } from "@nestjs/jwt";
-import { EmailRepository } from "src/email/email.repository";
 
 @Injectable()
 export class UsersRepository {
@@ -13,10 +12,9 @@ export class UsersRepository {
     constructor(
         @Inject('USERS_REPOSITORY')
         private usersDBRepository: typeof User,
-        @Inject(forwardRef(() => EmailRepository))
-        private emailRepositoryUsers: EmailRepository,
         private jwtService: JwtService,
     ) { }
+
     async getUserByEmail(user: IUser): Promise<IUser> {
         return await this.usersDBRepository.findOne({ where: { email: user.email } });
     }
@@ -50,31 +48,12 @@ export class UsersRepository {
         await this.usersDBRepository.update({ password: hashedPassword, salt: gen_salt }, { where: { id: gUser.id } });
     }
 
-    async confirmResetPassword(user: IUser): Promise<void> {
-        const fUser = await this.getUserByEmail(user);
-        if (fUser) await this.emailRepositoryUsers.sendResetPassword(fUser);
-    }
-
-    async uploadAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
-        const cloudinary = require("cloudinary").v2;
-        cloudinary.config({
-            cloud_name: process.env.CLOUD_NAME,
-            api_key: process.env.API_KEY,
-            api_secret: process.env.API_SECRET,
-        });
-
-        await cloudinary.uploader.upload(file.path)
-            .then((result) => {
-                console.log("success", JSON.stringify(result, null, 2));
-                this.setAvatar(user, result.public_id)
-            })
-            .catch(error => {
-                console.log("error", JSON.stringify(error, null, 2));
-            });
-    }
-
     async setAvatar(user: IUser, fileId: string): Promise<void> {
-        const fUser = await this.getUserById(user);
-        if (fUser) await this.usersDBRepository.update({ avatarFileId: fileId }, { where: { id: fUser.id } });
+        try {
+            const fUser = await this.getUserById(user);
+            if (fUser) await this.usersDBRepository.update({ avatarFileId: fileId }, { where: { id: fUser.id } });
+        } catch {
+            throw new InternalServerErrorException();
+        }
     }
 }

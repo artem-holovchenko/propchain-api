@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { usersProviders } from 'src/users/users.providers';
 import { EmailController } from './email.controller';
-import { EmailRepository } from './email.repository';
 import { EmailService } from './email.service';
 
 @Module({
@@ -17,7 +16,7 @@ import { EmailService } from './email.service';
     }),
   ],
   controllers: [EmailController],
-  providers: [EmailService, EmailRepository,...usersProviders],
-  exports: [EmailRepository],
+  providers: [EmailService, ...usersProviders],
+  exports: [EmailService],
 })
 export class EmailModule { }

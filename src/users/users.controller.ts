@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Redirect, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Redirect, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -13,18 +13,20 @@ import { IUser } from './interfaces/user.interface';
 import { UsersService } from './users.service';
 import { UserEmailDto } from './dto/user-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import express, {Request, Response} from 'express';
+import { FilesService } from './files.service';
 
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-    constructor(private usersService: UsersService) { }
+    constructor(private usersService: UsersService, private filesServise: FilesService) { }
 
     @Post('/uploadAvatar')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     @UseInterceptors(FileInterceptor('avatar', { dest: 'src/assets/images' }))
-    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto): Promise<void> {
-        return this.usersService.uploadAvatar(UserIdDto, file);
+    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto, @Res({ passthrough: true }) res: Response): Promise<void> {
+        return this.filesServise.uploadAvatar(UserIdDto, file, res);
     }
 
     @Post('/requestPasswordChange')
