@@ -3,7 +3,7 @@ import { User } from "../users/user.entity";
 import * as bcrypt from 'bcrypt';
 import { Role } from "./role.enum";
 import { IUser } from "src/users/interfaces/user.interface";
-import { EmailService } from "src/email/email.service";
+import { EmailService } from "src/common/email.service";
 
 @Injectable()
 export class AuthRepository {

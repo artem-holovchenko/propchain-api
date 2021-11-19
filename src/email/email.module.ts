@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { usersProviders } from 'src/users/users.providers';
 import { EmailController } from './email.controller';
-import { EmailService } from './email.service';
+import { EmailService } from '../common/email.service';
 
 @Module({
   imports: [

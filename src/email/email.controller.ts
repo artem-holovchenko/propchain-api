@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Redirect } from '@nestjs/common';
 import { ApiInternalServerErrorResponse, ApiTags } from '@nestjs/swagger';
 import { EmailTokenDto } from './dto/email-token.dto';
-import { EmailService } from './email.service';
+import { EmailService } from '../common/email.service';
 
 @ApiTags('email')
 @Controller('email')

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { EmailModule } from 'src/email/email.module';
-import { FilesService } from './files.service';
+import { FilesService } from '../common/files.service';
 import { UsersController } from './users.controller';
 import { usersProviders } from './users.providers';
 import { UsersRepository } from './users.repository';

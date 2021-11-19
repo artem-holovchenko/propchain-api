@@ -14,7 +14,7 @@ import { UsersService } from './users.service';
 import { UserEmailDto } from './dto/user-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import express, {Request, Response} from 'express';
-import { FilesService } from './files.service';
+import { FilesService } from '../common/files.service';
 
 @ApiTags('users')
 @ApiBearerAuth()

@@ -3,7 +3,7 @@ import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
 import { IUserIdToken } from './interfaces/userId-token.dto';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from 'src/common/email.service';
 
 @Injectable()
 export class UsersService {
