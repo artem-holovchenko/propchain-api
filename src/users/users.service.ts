@@ -3,6 +3,7 @@ import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
 import { IUserEmailToken } from './interfaces/userEmail.interface';
+import { IUserIdentity } from './interfaces/user-identity.interface';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,10 @@ export class UsersService {
 
     async getUserById(user: IUser): Promise<IUser> {
         return this.usersRepository.getUserById(user);
+    }
+
+    async getWaitingUsers(): Promise<IUserIdentity[]> {
+        return this.usersRepository.getWaitingUsers();
     }
 
     async updateRole(user: IUser, role: Role): Promise<IUser> {

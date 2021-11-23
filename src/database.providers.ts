@@ -1,4 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
+import { Files } from "./users/files.entity";
+import { IdentityFiles } from "./users/identity-files.entity";
+import { IdentityRejections } from "./users/identity-rejections.entity";
+import { UserIdentities } from "./users/user-identities.entity";
 import { User } from "./users/user.entity";
 
 export const databaseProviders = [
@@ -13,7 +17,7 @@ export const databaseProviders = [
                     }
                 },
             });
-            sequelize.addModels([User]);
+            sequelize.addModels([User, Files, IdentityFiles, IdentityRejections, UserIdentities]);
             await sequelize.sync();
             return sequelize;
         },

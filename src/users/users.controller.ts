@@ -14,6 +14,7 @@ import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import express, {Request, Response} from 'express';
 import { FilesService } from '../common/files.service';
+import { IUserIdentity } from './interfaces/user-identity.interface';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -36,6 +37,14 @@ export class UsersController {
     resetPassword(@Param() emailTokenDto: UserEmailToken, @Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
         const { password } = resetPasswordDto;
         return this.usersService.resetPassword(emailTokenDto, password);
+    }
+
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.Admin)
+    @Get('/WaitingVerification')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    getWaitingUsers(): Promise<IUserIdentity[]> {
+        return this.usersService.getWaitingUsers();
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
