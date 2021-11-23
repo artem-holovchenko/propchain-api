@@ -1,5 +1,4 @@
 import { Sequelize } from "sequelize-typescript";
-import { Dialect } from "sequelize/types";
 import { User } from "./users/user.entity";
 
 export const databaseProviders = [

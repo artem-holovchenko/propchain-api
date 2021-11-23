@@ -1,14 +1,14 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { usersProviders } from 'src/users/users.providers';
 import { EmailController } from './email.controller';
-import { EmailRepository } from './email.repository';
-import { EmailService } from './email.service';
+import { EmailService } from '../common/email.service';
+import { EmailTokenService } from 'src/common/email-token.service';
 
 @Module({
   imports: [
-    forwardRef(() => UsersModule),
+    UsersModule,
     JwtModule.register({
       secret: process.env.SECRET,
       signOptions: {
@@ -17,7 +17,7 @@ import { EmailService } from './email.service';
     }),
   ],
   controllers: [EmailController],
-  providers: [EmailService, EmailRepository,...usersProviders],
-  exports: [EmailRepository],
+  providers: [EmailService, EmailTokenService, ...usersProviders],
+  exports: [EmailService, EmailTokenService],
 })
 export class EmailModule { }

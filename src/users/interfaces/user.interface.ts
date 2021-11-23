@@ -8,8 +8,9 @@ export interface IUser {
     phone?: string;
     email?: string;
     password?: string;
-    role?:Role;
+    role?: Role;
     emailIsVerified?: boolean;
     isUsaCitizen?: boolean;
-    
+    avatarFileId?: string;
+
 }

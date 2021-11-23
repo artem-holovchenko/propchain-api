@@ -1,4 +1,4 @@
-import { Table, Model, Column, Unique } from 'sequelize-typescript';
+import { Table, Model, Column, Unique, HasOne } from 'sequelize-typescript';
 import { DataTypes } from "sequelize";
 import { Role } from '../auth/role.enum';
 
@@ -43,4 +43,7 @@ export class User extends Model {
 
     @Column
     role: Role;
+
+    @Column
+    avatarFileId: string;
 }
