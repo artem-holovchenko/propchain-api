@@ -1,3 +1,3 @@
 export interface JwtUserIdPayload {
-    id: string;
+    email: string;
 }

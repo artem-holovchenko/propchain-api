@@ -2,14 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
-import { IUserIdToken } from './interfaces/userId-token.dto';
-import { EmailService } from 'src/common/email.service';
+import { IUserEmailToken } from './interfaces/userEmail.interface';
 
 @Injectable()
 export class UsersService {
     constructor(
         private usersRepository: UsersRepository,
-        private usersEmailService: EmailService,
     ) { }
 
     async getUserByEmail(user: IUser): Promise<IUser> {
@@ -24,13 +22,8 @@ export class UsersService {
         return this.usersRepository.updateRole(user, role);
     }
 
-    async confirmResetPassword(user: IUser): Promise<void> {
-        const fUser = await this.getUserByEmail(user);
-        if (fUser) await this.usersEmailService.sendResetPassword(fUser);
-    }
-
-    async resetPassword(userIdToken: IUserIdToken, password: string): Promise<void> {
-        return this.usersRepository.resetPassword(userIdToken, password);
+    async resetPassword(userEmailToken: IUserEmailToken, password: string): Promise<void> {
+        return this.usersRepository.resetPassword(userEmailToken, password);
     }
 
 }
