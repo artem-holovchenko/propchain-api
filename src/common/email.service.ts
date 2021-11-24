@@ -1,4 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { IEmailToken } from 'src/email/interfaces/email-token.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { EmailTokenService } from './email-token.service';
 const mailgun = require("mailgun-js");
@@ -11,6 +13,7 @@ export class EmailService {
 
     constructor(
         private emailTokenService: EmailTokenService,
+        private jwtService: JwtService,
     ) { this.mg = mailgun({ apiKey: process.env.MG_API, domain: process.env.MG_DOMAIN }); }
 
     async sendMessages(mailData): Promise<void> {
@@ -43,6 +46,16 @@ export class EmailService {
         };
 
         await this.sendMessages(data);
+    }
+
+    async resendConfirm(emailToken: IEmailToken): Promise<void> {
+        const email = await this.jwtService.decode(emailToken.token) as IUser;
+        await this.sendEmailConfirm(email);
+    }
+
+    async resendPasswordChange(emailToken: IEmailToken): Promise<void> {
+        const email = await this.jwtService.decode(emailToken.token) as IUser;
+        await this.sendResetPassword(email);
     }
 
     async sendResetPassword(user: IUser): Promise<void> {

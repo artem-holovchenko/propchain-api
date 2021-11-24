@@ -17,6 +17,18 @@ export class EmailController {
         return this.emailTokenService.confirmEmail(emailTokenDto);
     }
 
+    @Post('/resendConfirm')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    resendConfirm(@Body() emailTokenDto: EmailTokenDto): Promise<void> {
+        return this.emailService.resendConfirm(emailTokenDto);
+    }
+
+    @Post('/resendPasswordChange')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    resendPasswordChange(@Body() emailTokenDto: EmailTokenDto): Promise<void> {
+        return this.emailService.resendPasswordChange(emailTokenDto);
+    }
+
     @Post('/requestPasswordChange')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     confirmResetPassword(@Body() userEmailDto: UserEmailDto): Promise<void> {
