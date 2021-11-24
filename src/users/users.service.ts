@@ -26,4 +26,12 @@ export class UsersService {
         return this.usersRepository.resetPassword(userEmailToken, password);
     }
 
+    async deleteUserByEmail(user:IUser): Promise<void> {
+        return this.usersRepository.deleteUserByEmail(user);
+    }
+
+    async getAllUsers(): Promise<IUser[]> {
+        return this.usersRepository.getAllUsers();
+    }
+
 }

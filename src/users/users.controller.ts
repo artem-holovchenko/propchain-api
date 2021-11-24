@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Redirect, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Redirect, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -14,6 +14,7 @@ import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import express, {Request, Response} from 'express';
 import { FilesService } from '../common/files.service';
+import { UserEmailDto } from 'src/email/dto/user-email.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -36,6 +37,18 @@ export class UsersController {
     resetPassword(@Param() emailTokenDto: UserEmailToken, @Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
         const { password } = resetPasswordDto;
         return this.usersService.resetPassword(emailTokenDto, password);
+    }
+
+    @Delete('/:email/delete')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    deleteUserByEmail(@Param() userEmailDto: UserEmailDto): Promise<void> {
+        return this.usersService.deleteUserByEmail(userEmailDto);
+    }
+
+    @Get()
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    getAllUsers(): Promise<IUser[]> {
+        return this.usersService.getAllUsers();
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)

@@ -52,4 +52,23 @@ export class UsersRepository {
             throw new InternalServerErrorException();
         }
     }
+
+    async deleteUserByEmail(user: IUser): Promise<void> {
+        await this.usersDBRepository.destroy({ where: { email: user.email } });
+    }
+
+    async getAllUsers(): Promise<IUser[]> {
+        return await this.usersDBRepository.findAll({
+            attributes: [
+                'firstName',
+                'lastName',
+                'username',
+                'phone',
+                'email',
+                'emailIsVerified',
+                'isUsaCitizen',
+                'avatarFileId',
+            ]
+        });
+    }
 }
