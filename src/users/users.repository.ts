@@ -71,4 +71,20 @@ export class UsersRepository {
             ]
         });
     }
+
+    async createAdmin(): Promise<void> {
+        const gUser = await this.usersDBRepository.findOne({ where: { email: "admin@gmail.com" } });
+        if (!gUser) {
+            const gen_salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash('AdminPassw1!', gen_salt);
+            await this.usersDBRepository.create({
+                username: "Admin",
+                email: "admin@gmail.com",
+                password: hashedPassword,
+                salt: gen_salt,
+                emailIsVerified: true,
+                role: Role.Admin,
+            });
+        }
+    }
 }
