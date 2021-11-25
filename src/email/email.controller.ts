@@ -28,7 +28,7 @@ export class EmailController {
     resendPasswordChange(@Body() emailTokenDto: EmailTokenDto): Promise<void> {
         return this.emailService.resendPasswordChange(emailTokenDto);
     }
-
+    
     @Post('/requestPasswordChange')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     confirmResetPassword(@Body() userEmailDto: UserEmailDto): Promise<void> {

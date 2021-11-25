@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { Role } from "./role.enum";
 import { IUser } from "src/users/interfaces/user.interface";
 import { EmailService } from "src/common/email.service";
+import { JwtUserEmailPayload } from "src/email/interfaces/jwt-user-email-payload.interface";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthRepository {
@@ -12,6 +14,7 @@ export class AuthRepository {
         @Inject('USERS_REPOSITORY')
         private usersDBRepositoryAuth: typeof User,
         private emailServiceAuth: EmailService,
+        private jwtService: JwtService,
     ) { }
 
     async createUser(user: IUser): Promise<IUser> {
@@ -33,10 +36,15 @@ export class AuthRepository {
 
             await this.emailServiceAuth.sendEmailConfirm(nUser);
 
+            const { email } = nUser;
+            const payload: JwtUserEmailPayload = { email };
+            const accessToken: string = await this.jwtService.sign(payload);
+
             const rUser = {
                 username: nUser.username,
                 email: nUser.email,
                 role: nUser.role,
+                token: accessToken,
             }
 
             return rUser;

@@ -46,6 +46,7 @@ export class UsersController {
     }
 
     @Get()
+    @ApiOkResponse({ type: GetUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     getAllUsers(): Promise<IUser[]> {
         return this.usersService.getAllUsers();

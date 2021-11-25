@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { IEmailToken } from "src/email/interfaces/email-token.interface";
-import { JwtUserIdPayload } from "src/email/interfaces/jwt-user-email-payload.interface";
+import { JwtUserEmailPayload } from "src/email/interfaces/jwt-user-email-payload.interface";
 import { IUser } from "src/users/interfaces/user.interface";
 import { UsersRepository } from "src/users/users.repository";
 
@@ -15,7 +15,7 @@ export class EmailTokenService {
 
     async generateEmailToken(user: IUser): Promise<{ accessToken: string }> {
         const { email } = user;
-        const payload: JwtUserIdPayload = { email };
+        const payload: JwtUserEmailPayload = { email };
         const accessToken: string = await this.jwtService.sign(payload);
         return { accessToken };
     }

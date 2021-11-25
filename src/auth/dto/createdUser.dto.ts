@@ -13,4 +13,7 @@ export class CreatedUserDto {
 
     @ApiProperty()
     role: Role;
+
+    @ApiProperty()
+    token: string;
 }
