@@ -3,13 +3,22 @@ import { Role } from "../role.enum";
 
 export class CreatedUserDto {
     @ApiProperty()
+    id: string;
+
+    @ApiProperty()
+    firstName: string;
+
+    @ApiProperty()
+    lastName: string;
+
+    @ApiProperty()
     username: string;
 
     @ApiProperty()
-    email: string;
+    phone: string;
 
     @ApiProperty()
-    emailIsVerified: boolean;
+    email: string;
 
     @ApiProperty()
     role: Role;

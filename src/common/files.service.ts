@@ -38,4 +38,28 @@ export class FilesService {
             throw new InternalServerErrorException();
         }
     }
+
+    async uploadFiles(user: IUser, files: Array<Express.Multer.File>, res: Response): Promise<void> {
+      //  try {
+            let result = {};
+            const unlinkAsync = promisify(fs.unlink);
+            const fIdentity = await this.usersRepository.getWaitingUser(user);
+            if (!fIdentity) {
+                await this.usersRepository.setStatus(user);
+                for (let i = 0; i < files.length; i++) {
+                    result[i] = await cloudinary.uploader.upload(files[i].path, { public_id: files[i].originalname });
+                    await unlinkAsync(files[i].path);
+                    await this.usersRepository.setFiles(user, result[i].public_id, result[i].url);
+                }
+
+                res.status(HttpStatus.OK).json({
+                    status: "Success",
+                    message: "FilesUploaded",
+                });
+            }
+
+    //    } catch (e) {
+       //     throw new InternalServerErrorException();
+      //  }
+    }
 }

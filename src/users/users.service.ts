@@ -3,6 +3,7 @@ import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
 import { IUserEmailToken } from './interfaces/userEmail.interface';
+import { IRejectFiles } from './interfaces/reject-files.interface';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +33,14 @@ export class UsersService {
 
     async getAllUsers(): Promise<IUser[]> {
         return this.usersRepository.getAllUsers();
+    }
+
+    async approveFiles(user: IUser): Promise<void> {
+        return this.usersRepository.approveFiles(user);
+    }
+
+    async rejectFiles(rejectFiles: IRejectFiles): Promise<void> {
+        return this.usersRepository.rejectFiles(rejectFiles);
     }
 
 }
