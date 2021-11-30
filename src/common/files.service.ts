@@ -1,7 +1,8 @@
-import { HttpStatus, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { IUser } from "../users/interfaces/user.interface";
 import { UsersRepository } from "../users/users.repository";
 import express, { Request, Response } from 'express';
+import { Files } from "./files.entity";
 const cloudinary = require("cloudinary").v2;
 const fs = require('fs');
 const { promisify } = require('util');
@@ -10,7 +11,9 @@ const { promisify } = require('util');
 export class FilesService {
 
     constructor(
-        private usersRepository: UsersRepository
+        private usersRepository: UsersRepository,
+        @Inject('FILES_REPOSITORY')
+        private filesDBRepository: typeof Files,
     ) {
         cloudinary.config({
             cloud_name: process.env.CLOUD_NAME,
@@ -38,4 +41,21 @@ export class FilesService {
             throw new InternalServerErrorException();
         }
     }
+
+    async uploadFiles(files: Array<Express.Multer.File>): Promise<any> {
+        try {
+            let result = [];
+            const unlinkAsync = promisify(fs.unlink);
+            for (let i = 0; i < files.length; i++) {
+                result[i] = await cloudinary.uploader.upload(files[i].path, { public_id: files[i].originalname });
+                await unlinkAsync(files[i].path);
+
+            }
+            return result;
+
+        } catch (e) {
+            throw new InternalServerErrorException();
+        }
+    }
+
 }
