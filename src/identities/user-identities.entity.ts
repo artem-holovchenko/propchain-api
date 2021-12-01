@@ -1,10 +1,10 @@
 import { Table, Model, Column, ForeignKey, BelongsTo, HasMany, BelongsToMany } from 'sequelize-typescript';
 import { DataTypes } from "sequelize";
-import { Status } from './status.enum';
-import { User } from './user.entity';
 import { IdentityRejections } from './identity-rejections.entity';
 import { Files } from './files.entity';
 import { IdentityFiles } from './identity-files.entity';
+import { Status } from 'src/users/status.enum';
+import { User } from 'src/users/user.entity';
 
 @Table
 export class UserIdentities extends Model {

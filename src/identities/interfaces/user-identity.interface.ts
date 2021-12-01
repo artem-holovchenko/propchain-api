@@ -1,4 +1,5 @@
-import { Status } from "../status.enum";
+import { Status } from "src/users/status.enum";
+
 
 export interface IUserIdentity {
     id?: string;

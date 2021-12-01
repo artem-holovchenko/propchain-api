@@ -3,7 +3,7 @@ import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
 import { IUserEmailToken } from './interfaces/userEmail.interface';
-import { IRejectFiles } from './interfaces/reject-files.interface';
+import { IRejectFiles } from '../identities/interfaces/reject-files.interface';
 
 @Injectable()
 export class UsersService {
@@ -35,12 +35,7 @@ export class UsersService {
         return this.usersRepository.getAllUsers();
     }
 
-    async approveFiles(user: IUser): Promise<void> {
-        return this.usersRepository.approveFiles(user);
+    async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
+        return this.usersRepository.setAvatar(user, file);
     }
-
-    async rejectFiles(rejectFiles: IRejectFiles): Promise<void> {
-        return this.usersRepository.rejectFiles(rejectFiles);
-    }
-
 }

@@ -5,13 +5,7 @@ import { User } from "./user.entity";
 import * as bcrypt from 'bcrypt';
 import { IUserEmailToken } from "./interfaces/userEmail.interface";
 import { JwtService } from "@nestjs/jwt";
-import { UserIdentities } from "./user-identities.entity";
-import { Files } from "./files.entity";
-import { IdentityRejections } from "./identity-rejections.entity";
-import { IdentityFiles } from "./identity-files.entity";
-import { IUserIdentity } from "./interfaces/user-identity.interface";
-import { Status } from "./status.enum";
-import { IRejectFiles } from "./interfaces/reject-files.interface";
+import { FilesService } from "src/common/files.service";
 
 @Injectable()
 export class UsersRepository {
@@ -19,15 +13,9 @@ export class UsersRepository {
     constructor(
         @Inject('USERS_REPOSITORY')
         private usersDBRepository: typeof User,
-        @Inject('USER_IDENTITIES_REPOSITORY')
-        private userIdentitiesDBRepository: typeof UserIdentities,
-        @Inject('FILES_REPOSITORY')
-        private filesDBRepository: typeof Files,
-        @Inject('IDENTITY_REJECTIONS_REPOSITORY')
-        private identityRejectionsDBRepository: typeof IdentityRejections,
-        @Inject('IDENTITY_FILES_REPOSITORY')
-        private identityFilesDBRepository: typeof IdentityFiles,
         private jwtService: JwtService,
+        @Inject('UPLOAD_FILES_REPOSITORY')
+        private uploadFilesProviders: FilesService,
     ) { }
 
     async getUserByEmail(user: IUser): Promise<IUser> {
@@ -59,61 +47,11 @@ export class UsersRepository {
         await this.usersDBRepository.update({ password: hashedPassword, salt: gen_salt }, { where: { email: gId.email } });
     }
 
-    async setAvatar(user: IUser, fileId: string): Promise<void> {
+    async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
         try {
+            const gFile = await this.uploadFilesProviders.uploadAvatar(file);
             const { id } = user;
-            await this.usersDBRepository.update({ avatarFileId: fileId }, { where: { id: id } });
-        } catch {
-            throw new InternalServerErrorException();
-        }
-    }
-
-    async getWaitingUser(user: IUser): Promise<IUserIdentity> {
-        const { id } = user;
-        return await this.userIdentitiesDBRepository.findOne({ where: { userId: id, status: Status.Waiting } });
-    }
-
-    async setStatus(user: IUser): Promise<void> {
-        try {
-            const { id } = user;
-            const fIdentity = await this.getWaitingUser(user);
-            if (!fIdentity) {
-                await this.userIdentitiesDBRepository.create({ userId: id, status: Status.Waiting });
-            }
-
-        } catch {
-            throw new InternalServerErrorException();
-        }
-    }
-
-    async setFiles(user: IUser, name: string, url: string): Promise<void> {
-        try {
-            const gFile = await this.filesDBRepository.create({ name: name, url: url });
-
-            const { id } = user;
-            const fIdentity = await this.userIdentitiesDBRepository.findOne({ where: { userId: id, status: Status.Waiting } });
-            if (fIdentity) {
-                await this.identityFilesDBRepository.create({ identityId: fIdentity.id, fileId: gFile.id });
-            }
-        } catch {
-            throw new InternalServerErrorException();
-        }
-    }
-
-    async approveFiles(user: IUser): Promise<void> {
-        try {
-            const { id } = user;
-            await this.userIdentitiesDBRepository.update({ status: Status.Approved }, { where: { userId: id } });
-        } catch {
-            throw new InternalServerErrorException();
-        }
-    }
-
-    async rejectFiles(rejectFiles: IRejectFiles): Promise<void> {
-        try {
-            const gId = await this.userIdentitiesDBRepository.findOne({ where: { userId: rejectFiles.userId } });
-            await this.userIdentitiesDBRepository.update({ status: Status.Rejected }, { where: { userId: rejectFiles.userId } });
-            await this.identityRejectionsDBRepository.create({ identityId: gId.id, description: rejectFiles.description });
+            await this.usersDBRepository.update({ avatarFileId: gFile.public_id }, { where: { id: id } });
         } catch {
             throw new InternalServerErrorException();
         }

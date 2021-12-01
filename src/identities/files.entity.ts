@@ -17,9 +17,6 @@ export class Files extends Model {
     name: string;
 
     @Column
-    externalId: string;
-
-    @Column
     url: string;
 
     @BelongsToMany(() => UserIdentities, () => IdentityFiles)

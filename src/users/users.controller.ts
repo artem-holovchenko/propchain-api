@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Redirect, Res, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Redirect, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -11,50 +11,23 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { UserIdDto } from './dto/userId.dto';
 import { IUser } from './interfaces/user.interface';
 import { UsersService } from './users.service';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import express, {Request, Response} from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from '../common/files.service';
 import { UserEmailDto } from 'src/email/dto/user-email.dto';
-import { RejectFilesDto } from './dto/reject-files.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-    constructor(private usersService: UsersService, private filesService: FilesService) { }
+    constructor(private usersService: UsersService) { }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.User)
     @Post('/uploadAvatar')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     @UseInterceptors(FileInterceptor('avatar', { dest: 'src/assets/images' }))
-    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto, @Res({ passthrough: true }) res: Response): Promise<void> {
-        return this.filesService.uploadAvatar(UserIdDto, file, res);
-    }
-
-    //@UseGuards(AuthGuard('jwt'), RolesGuard)
-    //@Roles(Role.User)
-    @Post('/VerifyFiles')
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    @UseInterceptors(FilesInterceptor('files', 2, { dest: 'src/assets/images' }))
-    verifyFiles(@UploadedFiles() files: Array<Express.Multer.File>, @Body() userIdDto: UserIdDto, @Res({ passthrough: true }) res: Response): Promise<void> {
-        return this.filesService.uploadFiles(userIdDto, files, res);
-    }
-
-    //@UseGuards(AuthGuard('jwt'), RolesGuard)
-    //@Roles(Role.Admin)
-    @Post('/ApproveFiles')
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    approveFiles(@Body() userIdDto: UserIdDto): Promise<void> {
-        return this.usersService.approveFiles(userIdDto);
-    }
-
-    //@UseGuards(AuthGuard('jwt'), RolesGuard)
-    //@Roles(Role.Admin)
-    @Post('/RejectFiles')
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    rejectFiles(@Body() rejectFilesDto: RejectFilesDto): Promise<void> {
-        return this.usersService.rejectFiles(rejectFilesDto);
+    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto): Promise<void> {
+        return this.usersService.setAvatar(UserIdDto, file);
     }
 
     @Post('/confirmPasswordChange/:token')

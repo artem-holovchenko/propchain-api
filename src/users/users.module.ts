@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { FilesService } from '../common/files.service';
-import { AdminService } from './admin.service';
-import { filesProviders } from './files.providers';
-import { identityFilesProviders } from './identity-files.providers';
-import { identityRejectionsProviders } from './identity-rejections.providers';
-import { userIdentitiesProviders } from './user-identities.providers';
+import { filesProviders } from 'src/identities/files.providers';
+import { uploadFilesProviders } from 'src/identities/upload-files.providers';
 import { UsersController } from './users.controller';
 import { usersProviders } from './users.providers';
 import { UsersRepository } from './users.repository';
@@ -25,13 +21,10 @@ import { UsersService } from './users.service';
   controllers: [UsersController],
   providers: [
     UsersService,
-    FilesService,
     UsersRepository,
     ...usersProviders,
-    ...userIdentitiesProviders,
-    ...filesProviders,
-    ...identityRejectionsProviders,
-    ...identityFilesProviders],
+    ...uploadFilesProviders,
+    ...filesProviders],
   exports: [UsersRepository],
 })
 export class UsersModule { }
