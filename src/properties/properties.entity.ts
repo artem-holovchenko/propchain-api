@@ -72,6 +72,5 @@ export class Properties extends Model {
     contractId: string;
 
     @BelongsToMany(() => Files, () => PropertyImages)
-    files: Array<Files & {PropertyImages: PropertyImages}>
-    //files: Files[];
+    files: Array<Files & {PropertyImages: PropertyImages}>;
 }

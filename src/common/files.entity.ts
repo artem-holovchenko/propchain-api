@@ -20,6 +20,5 @@ export class Files extends Model {
     url: string;
 
     @BelongsToMany(() => Properties, () => PropertyImages)
-    properties: Array<Properties & {PropertyImages: PropertyImages}>
-    //properties: Properties[];
+    properties: Array<Properties & {PropertyImages: PropertyImages}>;
 }

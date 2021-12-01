@@ -44,14 +44,16 @@ export class FilesService {
 
     async uploadFiles(files: Array<Express.Multer.File>): Promise<any> {
         try {
-            let result = [];
+            let result = {};
+            let gFiles = {};
             const unlinkAsync = promisify(fs.unlink);
             for (let i = 0; i < files.length; i++) {
                 result[i] = await cloudinary.uploader.upload(files[i].path, { public_id: files[i].originalname });
+                gFiles[i] = await this.filesDBRepository.create({ name: result[i].public_id, url: result[i].url });
                 await unlinkAsync(files[i].path);
-
             }
-            return result;
+
+            return gFiles;
 
         } catch (e) {
             throw new InternalServerErrorException();

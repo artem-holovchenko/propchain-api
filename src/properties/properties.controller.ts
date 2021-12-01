@@ -1,5 +1,5 @@
-import { Body, Controller, Param, Patch, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiInternalServerErrorResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { PropertiesDto } from './dto/properties.dto';
@@ -12,7 +12,7 @@ import { PropertyIdDto } from './dto/property-id.dto';
 export class PropertiesController {
     constructor(private propertiesService: PropertiesService) { }
 
-    @Post('/AddProperty')
+    @Post('/addProperty')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     @UseInterceptors(FilesInterceptor('propertyImages', 2, { dest: 'src/assets/images' }))
     @ApiConsumes('multipart/form-data')
@@ -48,5 +48,23 @@ export class PropertiesController {
     })
     createProperty(@UploadedFiles() files: Array<Express.Multer.File>, @Body() propertiesDto: PropertiesDto): Promise<IProperties> {
         return this.propertiesService.createProperty(propertiesDto, files);
+    }
+
+    @Patch('/:id/editProperty')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    editProperty(@Param() propertyIdDto: PropertyIdDto, @Body() propertiesDto: PropertiesDto): Promise<IProperties> {
+        return this.propertiesService.editProperty(propertyIdDto, propertiesDto);
+    }
+
+    @Delete('/:id/deleteProperty')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    deleteProperty(@Param() propertyIdDto: PropertyIdDto): Promise<void> {
+        return this.propertiesService.deleteProperty(propertyIdDto);
+    }
+
+    @Get()
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    getAllProperties(): Promise<IProperties[]> {
+        return this.propertiesService.getAllProperties();
     }
 }
