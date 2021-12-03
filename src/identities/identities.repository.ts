@@ -8,6 +8,7 @@ import { Status } from "src/users/status.enum";
 import { UserIdentities } from "src/identities/user-identities.entity";
 import { FilesService } from "src/common/files.service";
 import { IGetFile } from "./interfaces/get-file.interface";
+import e from "express";
 
 @Injectable()
 export class IdentitiesRepository {
@@ -33,10 +34,15 @@ export class IdentitiesRepository {
         if (!gStatus) {
             await this.setStatus(user);
             const gFiles = await this.uploadFilesProviders.uploadFiles(files);
-            for (let i = 0; i < files.length; i++) {
-                await this.setFiles(user, gFiles[i].id);
+
+            for await (let value of gFiles) {
+                this.setFiles(user, value.id);
             }
+        } else {
+            await this.uploadFilesProviders.delFiles(files);
         }
+
+
     }
 
     async setFiles(user: IUser, file: IGetFile): Promise<void> {

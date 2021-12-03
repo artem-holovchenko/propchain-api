@@ -1,5 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { Files } from "src/identities/files.entity";
+import { resourceLimits } from "worker_threads";
 const cloudinary = require("cloudinary").v2;
 const fs = require('fs');
 const { promisify } = require('util');
@@ -18,13 +19,25 @@ export class FilesService {
         });
     }
 
+    async delFile(file: Express.Multer.File): Promise<void> {
+        const unlinkAsync = promisify(fs.unlink);
+        await unlinkAsync(file.path);
+
+    }
+
+    async delFiles(files: Array<Express.Multer.File>): Promise<void> {
+
+        const unlinkAsync = promisify(fs.unlink);
+        for await (let f of files) {
+            unlinkAsync(f.path);
+        }
+
+    }
+
     async uploadAvatar(file: Express.Multer.File): Promise<any> {
         try {
             const result = await cloudinary.uploader.upload(file.path);
-
-            const unlinkAsync = promisify(fs.unlink);
-            await unlinkAsync(file.path);
-
+            await this.delFile(file);
             return result;
 
         } catch (e) {
@@ -33,20 +46,33 @@ export class FilesService {
     }
 
     async uploadFiles(files: Array<Express.Multer.File>): Promise<any> {
-        try {
-            let result = {};
-            let gFiles = {};
-            const unlinkAsync = promisify(fs.unlink);
-            for (let i = 0; i < files.length; i++) {
-                result[i] = await cloudinary.uploader.upload(files[i].path, { public_id: files[i].originalname });
-                gFiles[i] = await this.filesDBRepository.create({ name: result[i].public_id, url: result[i].url });
-                await unlinkAsync(files[i].path);
-            }
+         try {
+        let result = [];
+        let gFiles = [];
+        let rejFiles = [];
 
-            return gFiles;
-
-        } catch (e) {
-            throw new InternalServerErrorException();
+        for await (let f of files) {
+            result.push(cloudinary.uploader.upload(f.path, { public_id: f.originalname }));
         }
+
+        const results = await Promise.allSettled(result);
+
+        for await (let res of results) {
+            if (res.status === 'fulfilled') {
+                gFiles.push(this.filesDBRepository.create({ name: res.value.public_id, url: res.value.url }));
+            } else {
+                for await (let f of files) {
+                    rejFiles.push(f.originalname);
+                }
+                throw new Error(`Please upload files ${rejFiles} again`);
+            }
+        }
+
+        await this.delFiles(files);
+        return gFiles;
+
+         } catch (e) {
+           throw new InternalServerErrorException();
+         }
     }
 }
