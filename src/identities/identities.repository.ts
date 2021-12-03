@@ -33,10 +33,10 @@ export class IdentitiesRepository {
         const gStatus = await this.getWaitingUser(user);
         if (!gStatus) {
             await this.setStatus(user);
-            const gFiles = await this.uploadFilesProviders.uploadFiles(files);
+            const gFiles = await this.uploadFilesProviders.uploadBulk(files);
 
             for await (let value of gFiles) {
-                this.setFiles(user, value.id);
+                this.setFiles(user, value.name);
             }
         } else {
             await this.uploadFilesProviders.delFiles(files);

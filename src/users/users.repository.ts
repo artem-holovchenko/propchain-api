@@ -49,9 +49,9 @@ export class UsersRepository {
 
     async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
         try {
-            const gFile = await this.uploadFilesProviders.uploadAvatar(file);
+            const gFile = await this.uploadFilesProviders.uploadFile(file);
             const { id } = user;
-            await this.usersDBRepository.update({ avatarFileId: gFile.public_id }, { where: { id: id } });
+            await this.usersDBRepository.update({ avatarFileId: gFile.name }, { where: { id: id } });
         } catch {
             throw new InternalServerErrorException();
         }
