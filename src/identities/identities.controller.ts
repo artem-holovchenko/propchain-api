@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiTags } from '@nestjs/swagger';
 import { UserIdDto } from 'src/users/dto/userId.dto';
@@ -8,6 +8,9 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RejectFilesDto } from 'src/identities/dto/reject-files.dto';
 import { Role } from 'src/auth/role.enum';
+import { UserIdentitiesIdDto } from './dto/user-identities-id.dto';
+import { IUserIdentity } from './interfaces/user-identity.interface';
+import { IGetFile } from './interfaces/get-file.interface';
 
 @ApiTags('identities')
 @ApiBearerAuth()
@@ -21,7 +24,7 @@ export class IdentitiesController {
     @Post('/verifyId')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     @UseInterceptors(FilesInterceptor('files', 2, { dest: 'src/assets/images' }))
-    verifyId(@UploadedFiles() files: Array<Express.Multer.File>, @Body() userIdDto: UserIdDto): Promise<void> {
+    verifyId(@UploadedFiles() files: Array<Express.Multer.File>, @Body() userIdDto: UserIdDto): Promise<any> {
         return this.identitiesService.verifyId(userIdDto, files);
     }
 
@@ -39,6 +42,14 @@ export class IdentitiesController {
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     rejectId(@Body() rejectFilesDto: RejectFilesDto): Promise<void> {
         return this.identitiesService.rejectId(rejectFilesDto);
+    }
+
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.Admin)
+    @Delete('/:id/deleteId')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    deleteId(@Param() userIdDto: UserIdDto): Promise<void> {
+        return this.identitiesService.deleteId(userIdDto);
     }
 
 }

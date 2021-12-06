@@ -8,7 +8,8 @@ import { Status } from "src/users/status.enum";
 import { UserIdentities } from "src/identities/user-identities.entity";
 import { FilesService } from "src/common/files.service";
 import { IGetFile } from "./interfaces/get-file.interface";
-import e from "express";
+import { User } from "src/users/user.entity";
+import { Files } from "./files.entity";
 
 @Injectable()
 export class IdentitiesRepository {
@@ -22,6 +23,8 @@ export class IdentitiesRepository {
         private identityFilesDBRepository: typeof IdentityFiles,
         @Inject('UPLOAD_FILES_REPOSITORY')
         private uploadFilesProviders: FilesService,
+        @Inject('FILES_REPOSITORY')
+        private filesDBRepository: typeof Files,
     ) { }
 
     async getWaitingUser(user: IUser): Promise<IUserIdentity> {
@@ -29,20 +32,26 @@ export class IdentitiesRepository {
         return await this.userIdentitiesDBRepository.findOne({ where: { userId: id, status: Status.Waiting } });
     }
 
-    async verifyId(user: IUser, files: Array<Express.Multer.File>): Promise<void> {
+    async verifyId(user: IUser, files: Array<Express.Multer.File>): Promise<any> {
         const gStatus = await this.getWaitingUser(user);
         if (!gStatus) {
             await this.setStatus(user);
             const gFiles = await this.uploadFilesProviders.uploadBulk(files);
+            const getFiles = await Promise.allSettled(gFiles);
+            return getFiles.map((res) => {
+                if (res.status === "fulfilled") {
+                    if (res.value.status === "uploaded") {
+                        this.setFiles(user, res.value.name);
+                        return res.value;
+                    } else {
+                        return res.value.reason;
+                    }
+                }
+            });
 
-            for await (let value of gFiles) {
-                this.setFiles(user, value.name);
-            }
         } else {
             await this.uploadFilesProviders.delFiles(files);
         }
-
-
     }
 
     async setFiles(user: IUser, file: IGetFile): Promise<void> {
@@ -84,6 +93,18 @@ export class IdentitiesRepository {
             const gId = await this.userIdentitiesDBRepository.findOne({ where: { userId: rejectFiles.userId } });
             await this.userIdentitiesDBRepository.update({ status: Status.Rejected }, { where: { userId: rejectFiles.userId } });
             await this.identityRejectionsDBRepository.create({ identityId: gId.id, description: rejectFiles.description });
+        } catch {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async deleteId(user: IUser): Promise<void> {
+        try {
+            await this.uploadFilesProviders.delFilesDB(user);
+
+            const gId = await this.userIdentitiesDBRepository.findOne({ where: { userId: user.id } });
+            await this.identityRejectionsDBRepository.destroy({ where: { identityId: gId.id } });
+            await this.userIdentitiesDBRepository.destroy({ where: { userId: user.id } });
         } catch {
             throw new InternalServerErrorException();
         }

@@ -1,3 +1,5 @@
 export class IGetFile {
-    id: string;
+    id?: string;
+    name?: string;
+    url?: string;
 }

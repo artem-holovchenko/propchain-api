@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { IRejectFiles } from 'src/identities/interfaces/reject-files.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { IdentitiesRepository } from './identities.repository';
+import { IGetFile } from './interfaces/get-file.interface';
+import { IUserIdentity } from './interfaces/user-identity.interface';
 
 @Injectable()
 export class IdentitiesService {
@@ -9,7 +11,7 @@ export class IdentitiesService {
         private identitiesRepository: IdentitiesRepository,
     ) { }
 
-    async verifyId(user: IUser, files: Array<Express.Multer.File>): Promise<void> {
+    async verifyId(user: IUser, files: Array<Express.Multer.File>): Promise<any> {
         return this.identitiesRepository.verifyId(user, files);
     }
 
@@ -19,5 +21,9 @@ export class IdentitiesService {
 
     async rejectId(rejectFiles: IRejectFiles): Promise<void> {
         return this.identitiesRepository.rejectId(rejectFiles);
+    }
+
+    async deleteId(user: IUser): Promise<void> {
+        return this.identitiesRepository.deleteId(user);
     }
 }
