@@ -20,7 +20,7 @@ export class AuthController {
     }
 
     @Post('/signin')
-    @ApiOkResponse({ type: TokenDto })
+    @ApiCreatedResponse({ type: TokenDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     signIn(
         @Body() authLoginDto: AuthLoginDto,

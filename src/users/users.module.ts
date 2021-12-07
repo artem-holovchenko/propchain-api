@@ -3,6 +3,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { FilesService } from '../common/files.service';
 import { userIdentitiesProviders } from './user-identities.providers';
+import { filesProviders } from 'src/identities/files.providers';
+import { uploadFilesProviders } from 'src/identities/upload-files.providers';
 import { UsersController } from './users.controller';
 import { usersProviders } from './users.providers';
 import { UsersRepository } from './users.repository';
@@ -19,7 +21,12 @@ import { UsersService } from './users.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, FilesService, UsersRepository, ...usersProviders, ...userIdentitiesProviders],
+  providers: [
+    UsersService,
+    UsersRepository,
+    ...usersProviders,
+    ...uploadFilesProviders,
+    ...filesProviders],
   exports: [UsersRepository],
 })
 export class UsersModule { }

@@ -1,8 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
-import { Files } from "./users/files.entity";
-import { IdentityFiles } from "./users/identity-files.entity";
-import { IdentityRejections } from "./users/identity-rejections.entity";
-import { UserIdentities } from "./users/user-identities.entity";
+import { Files } from "./identities/files.entity";
+import { IdentityFiles } from "./identities/identity-files.entity";
+import { IdentityRejections } from "./identities/identity-rejections.entity";
+import { UserIdentities } from "./identities/user-identities.entity";
 import { User } from "./users/user.entity";
 
 export const databaseProviders = [

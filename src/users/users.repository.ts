@@ -8,6 +8,7 @@ import { JwtService } from "@nestjs/jwt";
 import { UserIdentities } from "./user-identities.entity";
 import { IUserIdentity } from "./interfaces/user-identity.interface";
 import { Status } from "./status.enum";
+import { FilesService } from "src/common/files.service";
 
 @Injectable()
 export class UsersRepository {
@@ -18,6 +19,8 @@ export class UsersRepository {
         @Inject('USER_IDENTITIES_REPOSITORY')
         private userIdentitiesDBRepository: typeof UserIdentities,
         private jwtService: JwtService,
+        @Inject('UPLOAD_FILES_REPOSITORY')
+        private uploadFilesProviders: FilesService,
     ) { }
 
     async getUserByEmail(user: IUser): Promise<IUser> {
@@ -65,12 +68,49 @@ export class UsersRepository {
         await this.usersDBRepository.update({ password: hashedPassword, salt: gen_salt }, { where: { email: gId.email } });
     }
 
-    async setAvatar(user: IUser, fileId: string): Promise<void> {
+    async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
         try {
+            const gFile = await this.uploadFilesProviders.uploadFile(file);
             const { id } = user;
-            await this.usersDBRepository.update({ avatarFileId: fileId }, { where: { id: id } });
+            await this.usersDBRepository.update({ avatarFileId: gFile.name }, { where: { id: id } });
         } catch {
             throw new InternalServerErrorException();
+        }
+    }
+
+    async deleteUserByEmail(user: IUser): Promise<void> {
+        await this.usersDBRepository.destroy({ where: { email: user.email } });
+    }
+
+    async getAllUsers(): Promise<IUser[]> {
+        return await this.usersDBRepository.findAll({
+            attributes: [
+                'id',
+                'firstName',
+                'lastName',
+                'username',
+                'phone',
+                'email',
+                'emailIsVerified',
+                'isUsaCitizen',
+                'avatarFileId',
+            ]
+        });
+    }
+
+    async createAdmin(): Promise<void> {
+        const gUser = await this.usersDBRepository.findOne({ where: { email: "admin@gmail.com" } });
+        if (!gUser) {
+            const gen_salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash('AdminPassw1!', gen_salt);
+            await this.usersDBRepository.create({
+                username: "Admin",
+                email: "admin@gmail.com",
+                password: hashedPassword,
+                salt: gen_salt,
+                emailIsVerified: true,
+                role: Role.Admin,
+            });
         }
     }
 }
