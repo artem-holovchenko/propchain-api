@@ -5,6 +5,7 @@ import { User } from "./user.entity";
 import * as bcrypt from 'bcrypt';
 import { IUserEmailToken } from "./interfaces/userEmail.interface";
 import { JwtService } from "@nestjs/jwt";
+import { FilesService } from "src/common/files.service";
 
 @Injectable()
 export class UsersRepository {
@@ -13,6 +14,8 @@ export class UsersRepository {
         @Inject('USERS_REPOSITORY')
         private usersDBRepository: typeof User,
         private jwtService: JwtService,
+        @Inject('UPLOAD_FILES_REPOSITORY')
+        private uploadFilesProviders: FilesService,
     ) { }
 
     async getUserByEmail(user: IUser): Promise<IUser> {
@@ -44,10 +47,11 @@ export class UsersRepository {
         await this.usersDBRepository.update({ password: hashedPassword, salt: gen_salt }, { where: { email: gId.email } });
     }
 
-    async setAvatar(user: IUser, fileId: string): Promise<void> {
+    async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
         try {
+            const gFile = await this.uploadFilesProviders.uploadFile(file);
             const { id } = user;
-            await this.usersDBRepository.update({ avatarFileId: fileId }, { where: { id: id } });
+            await this.usersDBRepository.update({ avatarFileId: gFile.name }, { where: { id: id } });
         } catch {
             throw new InternalServerErrorException();
         }
@@ -60,6 +64,7 @@ export class UsersRepository {
     async getAllUsers(): Promise<IUser[]> {
         return await this.usersDBRepository.findAll({
             attributes: [
+                'id',
                 'firstName',
                 'lastName',
                 'username',

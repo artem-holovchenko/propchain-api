@@ -12,7 +12,6 @@ import { UserIdDto } from './dto/userId.dto';
 import { IUser } from './interfaces/user.interface';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import express, {Request, Response} from 'express';
 import { FilesService } from '../common/files.service';
 import { UserEmailDto } from 'src/email/dto/user-email.dto';
 
@@ -20,15 +19,15 @@ import { UserEmailDto } from 'src/email/dto/user-email.dto';
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-    constructor(private usersService: UsersService, private filesService: FilesService) { }
+    constructor(private usersService: UsersService) { }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.User)
     @Post('/uploadAvatar')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     @UseInterceptors(FileInterceptor('avatar', { dest: 'src/assets/images' }))
-    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto, @Res({ passthrough: true }) res: Response): Promise<void> {
-        return this.filesService.uploadAvatar(UserIdDto, file, res);
+    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto): Promise<void> {
+        return this.usersService.setAvatar(UserIdDto, file);
     }
 
     @Post('/confirmPasswordChange/:token')

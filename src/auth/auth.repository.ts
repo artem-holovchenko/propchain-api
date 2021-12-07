@@ -41,7 +41,11 @@ export class AuthRepository {
             const accessToken: string = await this.jwtService.sign(payload);
 
             const rUser = {
+                id: nUser.id,
+                firstName: nUser.firstName,
+                lastName: nUser.lastName,
                 username: nUser.username,
+                phone: nUser.phone,
                 email: nUser.email,
                 role: nUser.role,
                 token: accessToken,
