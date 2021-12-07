@@ -6,4 +6,9 @@ export class ResetPasswordDto {
     @IsNotEmpty()
     @IsString()
     password: string;
+    
+    @ApiProperty({ required: true, format: 'string' })
+    @IsNotEmpty()
+    @IsString()
+    token: string;
 }

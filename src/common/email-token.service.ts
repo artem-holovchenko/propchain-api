@@ -13,11 +13,11 @@ export class EmailTokenService {
         private jwtService: JwtService,
     ) { }
 
-    async generateEmailToken(user: IUser): Promise<{ accessToken: string }> {
+    async generateEmailToken(user: IUser): Promise<{ token: string }> {
         const { email } = user;
         const payload: JwtUserEmailPayload = { email };
-        const accessToken: string = await this.jwtService.sign(payload);
-        return { accessToken };
+        const token: string = await this.jwtService.sign(payload);
+        return { token };
     }
 
     async confirmEmail(emailToken: IEmailToken): Promise<void> {

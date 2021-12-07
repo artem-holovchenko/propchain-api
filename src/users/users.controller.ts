@@ -30,12 +30,11 @@ export class UsersController {
         return this.usersService.setAvatar(UserIdDto, file);
     }
 
-    @Post('/confirmPasswordChange/:token')
+    @Post('/confirmPasswordChange/')
     @Redirect(process.env.SIGN_IN_URL)
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    resetPassword(@Param() emailTokenDto: UserEmailToken, @Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
-        const { password } = resetPasswordDto;
-        return this.usersService.resetPassword(emailTokenDto, password);
+    confirmResetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
+        return this.usersService.confirmResetPassword(resetPasswordDto);
     }
 
     @Delete('/:email/delete')

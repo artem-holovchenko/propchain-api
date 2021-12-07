@@ -3,12 +3,12 @@ import { IUser } from "./interfaces/user.interface";
 import { Role } from "../auth/role.enum";
 import { User } from "./user.entity";
 import * as bcrypt from 'bcrypt';
-import { IUserEmailToken } from "./interfaces/userEmail.interface";
 import { JwtService } from "@nestjs/jwt";
 import { Status } from "./status.enum";
 import { FilesService } from "src/common/files.service";
 import { UserIdentities } from "src/identities/user-identities.entity";
 import { IUserIdentity } from "src/identities/interfaces/user-identity.interface";
+import { IPasswordReset } from "./interfaces/userEmail.interface";
 
 @Injectable()
 export class UsersRepository {
@@ -61,10 +61,10 @@ export class UsersRepository {
         await this.usersDBRepository.update({ emailIsVerified: true }, { where: { email: user.email } });
     }
 
-    async resetPassword(userEmailToken: IUserEmailToken, password: string): Promise<void> {
-        const gId = await this.jwtService.decode(userEmailToken.token) as IUser;
+    async confirmResetPassword(passwordReset: IPasswordReset): Promise<void> {
+        const gId = await this.jwtService.decode(passwordReset.token) as IUser;
         const gen_salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, gen_salt);
+        const hashedPassword = await bcrypt.hash(passwordReset.password, gen_salt);
         await this.usersDBRepository.update({ password: hashedPassword, salt: gen_salt }, { where: { email: gId.email } });
     }
 

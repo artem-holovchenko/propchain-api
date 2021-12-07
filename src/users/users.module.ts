@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { filesProviders } from 'src/identities/files.providers';
 import { uploadFilesProviders } from 'src/identities/upload-files.providers';
 import { userIdentitiesProviders } from 'src/identities/user-identities.providers';
+import { AdminService } from './admin.service';
 import { UsersController } from './users.controller';
 import { usersProviders } from './users.providers';
 import { UsersRepository } from './users.repository';
@@ -21,6 +22,7 @@ import { UsersService } from './users.service';
   ],
   controllers: [UsersController],
   providers: [
+    AdminService,
     UsersService,
     UsersRepository,
     ...userIdentitiesProviders,

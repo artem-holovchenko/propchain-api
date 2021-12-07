@@ -36,7 +36,7 @@ export class EmailService {
 
     async sendEmailConfirm(user: IUser): Promise<void> {
         const token = await this.emailTokenService.generateEmailToken(user);
-        const href = `${process.env.HEROKU_URL}/email/verification/${token.accessToken}`;
+        const href = `${process.env.HEROKU_URL}/email/verification/${token.token}`;
         const data = {
             from: `Propchain <${process.env.MG_EMAIL}>`,
             to: user.email,
@@ -58,9 +58,9 @@ export class EmailService {
         await this.sendResetPassword(email);
     }
 
-    async sendResetPassword(user: IUser): Promise<void> {
+    async sendResetPassword(user: IUser): Promise<any> {
         const token = await this.emailTokenService.generateEmailToken(user);
-        const href = `${process.env.HEROKU_URL}/users/confirmPasswordChange/${token.accessToken}`;
+        const href = `${process.env.CREATE_PASS_URL}`;
         const data = {
             from: `Propchain <${process.env.MG_EMAIL}>`,
             to: user.email,
@@ -70,5 +70,7 @@ export class EmailService {
         };
 
         await this.sendMessages(data);
+
+        return token;
     }
 }
