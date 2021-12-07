@@ -5,6 +5,9 @@ import { User } from "./user.entity";
 import * as bcrypt from 'bcrypt';
 import { IUserEmailToken } from "./interfaces/userEmail.interface";
 import { JwtService } from "@nestjs/jwt";
+import { UserIdentities } from "./user-identities.entity";
+import { IUserIdentity } from "./interfaces/user-identity.interface";
+import { Status } from "./status.enum";
 import { FilesService } from "src/common/files.service";
 
 @Injectable()
@@ -13,6 +16,8 @@ export class UsersRepository {
     constructor(
         @Inject('USERS_REPOSITORY')
         private usersDBRepository: typeof User,
+        @Inject('USER_IDENTITIES_REPOSITORY')
+        private userIdentitiesDBRepository: typeof UserIdentities,
         private jwtService: JwtService,
         @Inject('UPLOAD_FILES_REPOSITORY')
         private uploadFilesProviders: FilesService,
@@ -27,6 +32,22 @@ export class UsersRepository {
         if (!found) {
             throw new NotFoundException(`User with id: ${user.id} not found`);
         }
+        return found;
+    }
+
+    async getWaitingUsers(): Promise<IUserIdentity[]> {
+        const found = await this.userIdentitiesDBRepository.findAll({
+            attributes: ['status'], where: { status: Status.Waiting }, include: [{
+                model: User,
+                attributes: [
+                    'firstName',
+                    'lastName',
+                    'username',
+                    'phone',
+                ]
+            }]
+        });
+        
         return found;
     }
 

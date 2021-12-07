@@ -13,6 +13,7 @@ import { IUser } from './interfaces/user.interface';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from '../common/files.service';
+import { IUserIdentity } from './interfaces/user-identity.interface';
 import { UserEmailDto } from 'src/email/dto/user-email.dto';
 
 @ApiTags('users')
@@ -49,6 +50,14 @@ export class UsersController {
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     getAllUsers(): Promise<IUser[]> {
         return this.usersService.getAllUsers();
+    }
+
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.Admin)
+    @Get('/WaitingVerification')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    getWaitingUsers(): Promise<IUserIdentity[]> {
+        return this.usersService.getWaitingUsers();
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
