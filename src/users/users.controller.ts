@@ -12,9 +12,8 @@ import { UserIdDto } from './dto/userId.dto';
 import { IUser } from './interfaces/user.interface';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FilesService } from '../common/files.service';
-import { IUserIdentity } from './interfaces/user-identity.interface';
 import { UserEmailDto } from 'src/email/dto/user-email.dto';
+import { IUserIdentity } from 'src/identities/interfaces/user-identity.interface';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -54,7 +53,7 @@ export class UsersController {
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.Admin)
-    @Get('/WaitingVerification')
+    @Get('/waitingVerification')
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     getWaitingUsers(): Promise<IUserIdentity[]> {
         return this.usersService.getWaitingUsers();

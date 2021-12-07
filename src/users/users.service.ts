@@ -3,8 +3,7 @@ import { IUser } from './interfaces/user.interface';
 import { Role } from '../auth/role.enum';
 import { UsersRepository } from './users.repository';
 import { IUserEmailToken } from './interfaces/userEmail.interface';
-import { IUserIdentity } from './interfaces/user-identity.interface';
-import { IRejectFiles } from '../identities/interfaces/reject-files.interface';
+import { IUserIdentity } from 'src/identities/interfaces/user-identity.interface';
 
 @Injectable()
 export class UsersService {

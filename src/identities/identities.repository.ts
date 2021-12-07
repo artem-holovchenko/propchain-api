@@ -102,7 +102,7 @@ export class IdentitiesRepository {
         try {
             await this.uploadFilesProviders.delFilesDB(user);
 
-            const gId = await this.userIdentitiesDBRepository.findOne({ where: { userId: user.id } });
+            const gId = await this.userIdentitiesDBRepository.findOne({ where: { userId: user.id, status: Status.Rejected } });
             await this.identityRejectionsDBRepository.destroy({ where: { identityId: gId.id } });
             await this.userIdentitiesDBRepository.destroy({ where: { userId: user.id } });
         } catch {

@@ -5,10 +5,10 @@ import { User } from "./user.entity";
 import * as bcrypt from 'bcrypt';
 import { IUserEmailToken } from "./interfaces/userEmail.interface";
 import { JwtService } from "@nestjs/jwt";
-import { UserIdentities } from "./user-identities.entity";
-import { IUserIdentity } from "./interfaces/user-identity.interface";
 import { Status } from "./status.enum";
 import { FilesService } from "src/common/files.service";
+import { UserIdentities } from "src/identities/user-identities.entity";
+import { IUserIdentity } from "src/identities/interfaces/user-identity.interface";
 
 @Injectable()
 export class UsersRepository {
