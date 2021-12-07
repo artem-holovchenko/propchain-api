@@ -1,6 +1,8 @@
 import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { Files } from "src/identities/files.entity";
 import { UserIdentities } from "src/identities/user-identities.entity";
+import { IProperties } from "src/properties/interfaces/properties.interface";
+import { Properties } from "src/properties/properties.entity";
 import { IUser } from "src/users/interfaces/user.interface";
 import { Status } from "src/users/status.enum";
 const cloudinary = require("cloudinary").v2;
@@ -95,6 +97,24 @@ export class FilesService {
                 attributes: ['id', 'name'],
                 raw: true,
                 include: { model: UserIdentities, attributes: [], where: { userId: user.id, status: Status.Rejected }, through: { attributes: [] } }
+            });
+
+            for (let f of found) {
+                this.filesDBRepository.destroy({ where: { id: f.id } });
+                cloudinary.uploader.destroy(f.name);
+            }
+        } catch {
+            throw new InternalServerErrorException();
+        }
+
+    }
+
+    async delPropertyFilesDB(property: IProperties) {
+        try {
+            const found = await this.filesDBRepository.findAll({
+                attributes: ['id', 'name'],
+                raw: true,
+                include: { model: Properties, attributes: [], where: { id: property.id }, through: { attributes: [] } }
             });
 
             for (let f of found) {
