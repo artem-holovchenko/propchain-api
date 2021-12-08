@@ -20,4 +20,5 @@ export interface IProperties {
     rented?: string;
     section8?: string;
     contractId?: string;
+    page?: number;
 }

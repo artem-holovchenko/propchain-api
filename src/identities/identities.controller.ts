@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiTags } from '@nestjs/swagger';
 import { UserIdDto } from 'src/users/dto/userId.dto';
@@ -8,9 +8,6 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RejectFilesDto } from 'src/identities/dto/reject-files.dto';
 import { Role } from 'src/auth/role.enum';
-import { UserIdentitiesIdDto } from './dto/user-identities-id.dto';
-import { IUserIdentity } from './interfaces/user-identity.interface';
-import { IGetFile } from './interfaces/get-file.interface';
 
 @ApiTags('identities')
 @ApiBearerAuth()

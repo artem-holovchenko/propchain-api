@@ -100,8 +100,8 @@ export class FilesService {
             });
 
             for (let f of found) {
-                this.filesDBRepository.destroy({ where: { id: f.id } });
-                cloudinary.uploader.destroy(f.name);
+                await this.filesDBRepository.destroy({ where: { id: f.id } });
+                await cloudinary.uploader.destroy(f.name);
             }
         } catch {
             throw new InternalServerErrorException();
@@ -118,8 +118,8 @@ export class FilesService {
             });
 
             for (let f of found) {
-                this.filesDBRepository.destroy({ where: { id: f.id } });
-                cloudinary.uploader.destroy(f.name);
+                await this.filesDBRepository.destroy({ where: { id: f.id } });
+                await cloudinary.uploader.destroy(f.name);
             }
         } catch {
             throw new InternalServerErrorException();

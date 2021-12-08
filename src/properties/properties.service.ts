@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PropertyPageDto } from './dto/property-page.dto';
 import { IProperties } from './interfaces/properties.interface';
 import { PropertiesRepository } from './properties.repository';
 
@@ -20,7 +21,7 @@ export class PropertiesService {
         return await this.propertiesRepository.deleteProperty(id);
     }
 
-    async getAllProperties(): Promise<IProperties[]> {
-        return this.propertiesRepository.getAllProperties();
+    async getAllProperties(propPage: PropertyPageDto): Promise<IProperties[]> {
+        return this.propertiesRepository.getAllProperties(propPage);
     }
 }

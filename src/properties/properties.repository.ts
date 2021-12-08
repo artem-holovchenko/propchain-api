@@ -1,6 +1,7 @@
 import { ConflictException, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { FilesService } from "src/common/files.service";
 import { Files } from "src/identities/files.entity";
+import { PropertyPageDto } from "./dto/property-page.dto";
 import { IProperties } from "./interfaces/properties.interface";
 import { Properties } from "./properties.entity";
 import { PropertyImages } from "./property-images.entity";
@@ -46,19 +47,11 @@ export class PropertiesRepository {
 
             const gFiles = await this.uploadFilesProviders.uploadBulk(files);
 
-            const getFiles = await Promise.allSettled(gFiles);
-            getFiles.map((res) => {
-                if (res.status === "fulfilled") {
-                    if (res.value.status === "uploaded") {
-                        if (imgCount > 0) isMain = false;
-                        imgCount++;
-                        this.setFiles(nProperty, res.value.name, isMain);
-                        return res.value;
-                    } else {
-                        return res.value.reason;
-                    }
-                }
-            });
+            for (let f of gFiles) {
+                if (imgCount > 0) isMain = false;
+                imgCount++;
+                await this.setFiles(nProperty, f.name, isMain);
+            }
 
             return nProperty;
 
@@ -67,7 +60,7 @@ export class PropertiesRepository {
         }
     }
 
-    async setFiles(property: IProperties, file: string, isMain: boolean): Promise<any> {
+    async setFiles(property: IProperties, file: string, isMain: boolean): Promise<void> {
 
         try {
             const fProperty = await this.getPropertyById(property);
@@ -81,8 +74,11 @@ export class PropertiesRepository {
         return await this.propertiesDBRepository.findOne({ where: { id: property.id } });
     }
 
-    async getAllProperties(): Promise<IProperties[]> {
-        return await this.propertiesDBRepository.findAll({ include: { model: Files, through: { attributes: ['isMain'] } } });
+    async getAllProperties(propPage: PropertyPageDto): Promise<IProperties[]> {
+        const { page } = propPage;
+        let propLimit = 5;
+        let propCount = page * propLimit - propLimit;
+        return await this.propertiesDBRepository.findAll({ offset: propCount, limit: propLimit, include: { model: Files, through: { attributes: ['isMain'] } } });
     }
 
     async deleteProperty(property: IProperties): Promise<void> {
