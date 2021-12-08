@@ -8,8 +8,6 @@ import { Status } from "src/users/status.enum";
 import { UserIdentities } from "src/identities/user-identities.entity";
 import { FilesService } from "src/common/files.service";
 import { IGetFile } from "./interfaces/get-file.interface";
-import { User } from "src/users/user.entity";
-import { Files } from "./files.entity";
 
 @Injectable()
 export class IdentitiesRepository {
@@ -23,8 +21,6 @@ export class IdentitiesRepository {
         private identityFilesDBRepository: typeof IdentityFiles,
         @Inject('UPLOAD_FILES_REPOSITORY')
         private uploadFilesProviders: FilesService,
-        @Inject('FILES_REPOSITORY')
-        private filesDBRepository: typeof Files,
     ) { }
 
     async getWaitingUser(user: IUser): Promise<IUserIdentity> {
