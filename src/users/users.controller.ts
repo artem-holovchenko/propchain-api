@@ -14,6 +14,7 @@ import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserEmailDto } from 'src/email/dto/user-email.dto';
 import { IUserIdentity } from 'src/identities/interfaces/user-identity.interface';
+import { EditUserDto } from './dto/edit-user.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -73,5 +74,14 @@ export class UsersController {
     async updateRole(@Param() userIdDto: UserIdDto, @Body() updateRoleDto: UpdateRoleDto): Promise<IUser> {
         const { role } = updateRoleDto;
         return this.usersService.updateRole(userIdDto, role);
+    }
+
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.User)
+    @Patch('/:id/editUser')
+    @ApiOkResponse({ type: GetUserDto })
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    editUser(@Param() id: UserIdDto, @Body() editUserDto: EditUserDto): Promise<IUser> {
+        return this.usersService.editUser(id, editUserDto);
     }
 }

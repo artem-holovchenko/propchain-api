@@ -42,4 +42,8 @@ export class UsersService {
     async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
         return this.usersRepository.setAvatar(user, file);
     }
+
+    async editUser(userId: IUser, user: IUser): Promise<IUser> {
+        return this.usersRepository.editUser(userId, user);
+    }
 }
