@@ -7,6 +7,7 @@ export interface IProperties {
     coordinates?: string;
     totalTokens?: number;
     tokenPrice?: number;
+    totalPrice?: number;
     startDate?: Date;
     endDate?: Date;
     type?: string;
@@ -18,7 +19,6 @@ export interface IProperties {
     bedroom?: number;
     bath?: number;
     rented?: string;
-    section8?: string;
     contractId?: string;
     page?: number;
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PropertyFilterDto } from './dto/property-filters.dto';
 import { PropertyPageDto } from './dto/property-page.dto';
 import { IProperties } from './interfaces/properties.interface';
 import { PropertiesRepository } from './properties.repository';
@@ -23,5 +24,9 @@ export class PropertiesService {
 
     async getAllProperties(propPage: PropertyPageDto): Promise<IProperties[]> {
         return this.propertiesRepository.getAllProperties(propPage);
+    }
+
+    async getPropertiesWithFilters(filters: PropertyFilterDto): Promise<IProperties[]> {
+        return this.propertiesRepository.getPropertiesWithFilters(filters);
     }
 }

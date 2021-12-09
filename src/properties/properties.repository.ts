@@ -3,8 +3,10 @@ import { FilesService } from "src/common/files.service";
 import { Files } from "src/identities/files.entity";
 import { PropertyPageDto } from "./dto/property-page.dto";
 import { IProperties } from "./interfaces/properties.interface";
+import { IPropertyFilters } from "./interfaces/property-filters.interface";
 import { Properties } from "./properties.entity";
 import { PropertyImages } from "./property-images.entity";
+const { Op } = require("sequelize");
 
 @Injectable()
 export class PropertiesRepository {
@@ -27,6 +29,7 @@ export class PropertiesRepository {
                 coordinates: property.coordinates,
                 totalTokens: property.totalTokens,
                 tokenPrice: property.tokenPrice,
+                totalPrice: property.totalTokens * property.tokenPrice,
                 startDate: property.startDate,
                 endDate: property.endDate,
                 type: property.type,
@@ -38,7 +41,6 @@ export class PropertiesRepository {
                 bedroom: property.bedroom,
                 bath: property.bath,
                 rented: property.rented,
-                section8: property.section8,
                 contractId: property.contractId,
             });
 
@@ -81,6 +83,56 @@ export class PropertiesRepository {
         return await this.propertiesDBRepository.findAll({ offset: propCount, limit: propLimit, include: { model: Files, through: { attributes: ['isMain'] } } });
     }
 
+    async getPropertiesWithFilters(filters: IPropertyFilters): Promise<IProperties[]> {
+        const {
+            page,
+            minPrice,
+            maxPrice,
+            bedroomsFrom,
+            bedroomsTo,
+            bathFrom,
+            bathTo,
+            totalUnitsFrom,
+            totalUnitsTo,
+            squareFeetFrom,
+            squareFeetTo,
+            sortBy
+        } = filters;
+
+        let propLimit = 5;
+        let propCount = page * propLimit - propLimit;
+
+        let where = {};
+
+        if (minPrice && maxPrice) {
+            where['totalPrice'] = { [Op.between]: [minPrice, maxPrice] };
+        }
+
+        if (bathFrom && bathTo) {
+            where['bath'] = { [Op.between]: [bathFrom, bathTo] };
+        }
+
+        if (bedroomsFrom && bedroomsTo) {
+            where['bedroom'] = { [Op.between]: [bedroomsFrom, bedroomsTo] };
+        }
+
+        if (totalUnitsFrom && totalUnitsTo) {
+            where['totalUnits'] = { [Op.between]: [totalUnitsFrom, totalUnitsTo] };
+        }
+
+        if (squareFeetFrom && squareFeetTo) {
+            where['squareFeet'] = { [Op.between]: [squareFeetFrom, squareFeetTo] };
+        }
+
+        return await this.propertiesDBRepository.findAll({
+            order: [sortBy],
+            offset: propCount,
+            limit: propLimit,
+            where,
+            include: { model: Files, attributes: ['name', 'url'], through: { attributes: ['isMain'] } }
+        });
+    }
+
     async deleteProperty(property: IProperties): Promise<void> {
         await this.uploadFilesProviders.delPropertyFilesDB(property);
         await this.propertiesDBRepository.destroy({ where: { id: property.id } });
@@ -95,6 +147,7 @@ export class PropertiesRepository {
                 coordinates: property.coordinates,
                 totalTokens: property.totalTokens,
                 tokenPrice: property.tokenPrice,
+                totalPrice: property.totalTokens * property.tokenPrice,
                 startDate: property.startDate,
                 endDate: property.endDate,
                 type: property.type,
@@ -106,7 +159,6 @@ export class PropertiesRepository {
                 bedroom: property.bedroom,
                 bath: property.bath,
                 rented: property.rented,
-                section8: property.section8,
                 contractId: property.contractId,
             }, { where: { id: id.id } });
 

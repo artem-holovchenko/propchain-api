@@ -79,9 +79,5 @@ export class PropertiesDto {
 
     @IsString()
     @ApiProperty({ required: true, format: 'string' })
-    section8: string;
-
-    @IsString()
-    @ApiProperty({ required: true, format: 'string' })
     contractId: string;
 }

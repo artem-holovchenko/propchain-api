@@ -10,6 +10,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/role.enum';
 import { PropertyPageDto } from './dto/property-page.dto';
+import { PropertyFilterDto } from './dto/property-filters.dto';
 
 
 @ApiTags('properties')
@@ -80,5 +81,13 @@ export class PropertiesController {
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     getAllProperties(@Body()propPage: PropertyPageDto): Promise<IProperties[]> {
         return this.propertiesService.getAllProperties(propPage);
+    }
+
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.User)
+    @Get('/filters')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    getPropertiesWithFilters(@Body()filters: PropertyFilterDto): Promise<IProperties[]> {
+        return this.propertiesService.getPropertiesWithFilters(filters);
     }
 }
