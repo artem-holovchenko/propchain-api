@@ -96,13 +96,15 @@ export class PropertiesRepository {
             totalUnitsTo,
             squareFeetFrom,
             squareFeetTo,
-            sortBy
+            sortBy,
+            sortOrder,
         } = filters;
 
         let propLimit = 5;
         let propCount = page * propLimit - propLimit;
 
         let where = {};
+        let order = [];
 
         if (minPrice && maxPrice) {
             where['totalPrice'] = { [Op.between]: [minPrice, maxPrice] };
@@ -124,8 +126,17 @@ export class PropertiesRepository {
             where['squareFeet'] = { [Op.between]: [squareFeetFrom, squareFeetTo] };
         }
 
+        if (sortOrder == 'descending') {
+            order = [[sortBy, 'DESC']];
+        } else if (sortOrder == 'ascending') {
+            order = [[sortBy, 'ASC']];
+        } else {
+            order = [sortBy];
+        }
+
+
         return await this.propertiesDBRepository.findAll({
-            order: [sortBy],
+            order,
             offset: propCount,
             limit: propLimit,
             where,

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Allow, IsIn, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsIn, IsNotEmpty, IsString } from "class-validator";
 
 export class PropertyFilterDto {
 
@@ -35,7 +35,7 @@ export class PropertyFilterDto {
     squareFeetFrom: number;
 
     @ApiProperty({ format: 'number' })
-    squareFeetTo: number;  
+    squareFeetTo: number;
 
     @IsString()
     @IsIn([
@@ -45,4 +45,8 @@ export class PropertyFilterDto {
         'startDate',
     ])
     sortBy: string;
+
+    @IsString()
+    @IsIn(['ascending', 'descending'])
+    sortOrder: string;
 }

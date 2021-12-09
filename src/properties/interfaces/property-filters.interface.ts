@@ -9,6 +9,7 @@ export interface IPropertyFilters {
     totalUnitsFrom?: number;
     totalUnitsTo?: number;
     squareFeetFrom?: number;
-    squareFeetTo?: number;  
+    squareFeetTo?: number;
     sortBy?: string;
+    sortOrder?: string;
 }
