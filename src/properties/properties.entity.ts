@@ -32,6 +32,9 @@ export class Properties extends Model {
     @Column({type: DataType.FLOAT})
     tokenPrice: number;
 
+    @Column({type: DataType.FLOAT})
+    totalPrice: number;
+
     @Column
     startDate: Date;
 
@@ -64,9 +67,6 @@ export class Properties extends Model {
 
     @Column
     rented: string;
-
-    @Column
-    section8: string;
 
     @Column
     contractId: string;
