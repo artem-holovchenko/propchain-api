@@ -60,7 +60,7 @@ export class EmailService {
 
     async sendResetPassword(user: IUser): Promise<any> {
         const token = await this.emailTokenService.generateEmailToken(user);
-        const href = `${process.env.CREATE_PASS_URL}`;
+        const href = `${process.env.CREATE_PASS_URL}/${token.token}`;
         const data = {
             from: `Propchain <${process.env.MG_EMAIL}>`,
             to: user.email,
