@@ -31,7 +31,6 @@ export class UsersController {
     }
 
     @Post('/confirmPasswordChange/')
-    @Redirect(process.env.SIGN_IN_URL)
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     confirmResetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
         return this.usersService.confirmResetPassword(resetPasswordDto);
