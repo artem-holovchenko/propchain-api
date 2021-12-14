@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { IUser } from "./interfaces/user.interface";
 import { Role } from "../auth/role.enum";
 import { User } from "./user.entity";
@@ -28,7 +28,19 @@ export class UsersRepository {
     }
 
     async getUserById(user: IUser): Promise<IUser> {
-        const found = await this.usersDBRepository.findOne({ where: { id: user.id } });
+        const found = await this.usersDBRepository.findOne({
+            attributes: [
+                'id',
+                'firstName',
+                'lastName',
+                'username',
+                'phone',
+                'email',
+                'emailIsVerified',
+                'isUsaCitizen',
+                'avatarFileId',
+            ], where: { id: user.id }
+        });
         if (!found) {
             throw new NotFoundException(`User with id: ${user.id} not found`);
         }
@@ -111,6 +123,23 @@ export class UsersRepository {
                 emailIsVerified: true,
                 role: Role.Admin,
             });
+        }
+    }
+
+    async editUser(userId: IUser, user: IUser): Promise<IUser> {
+        try {
+            await this.usersDBRepository.update({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                phone: user.phone,
+                username: user.username,
+            }, { where: { id: userId.id } });
+
+            const gUser = await this.getUserById(userId);
+            return gUser;
+
+        } catch (error) {
+            throw new ConflictException(error.message);
         }
     }
 }
