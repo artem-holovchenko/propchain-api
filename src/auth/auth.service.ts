@@ -18,14 +18,28 @@ export class AuthService {
         return this.authRepository.createUser(user);
     }
 
-    async signIn(user: IUser): Promise<{ accessToken: string }> {
+    async signIn(user: IUser): Promise<IUser> {
         const gUser = await this.usersRepositoryAuth.getUserByEmail(user);
         const { email } = user;
         if (gUser && (await bcrypt.compare(user.password, gUser.password))) {
             if (gUser.emailIsVerified == true) {
                 const payload: JwtPayload = { email };
                 const accessToken: string = await this.jwtService.sign(payload);
-                return { accessToken };
+
+                const rUser = {
+                    id: gUser.id,
+                    firstName: gUser.firstName,
+                    lastName: gUser.lastName,
+                    username: gUser.username,
+                    phone: gUser.phone,
+                    email: gUser.email,
+                    avatarFileId: gUser.avatarFileId,
+                    role: gUser.role,
+                    token: accessToken,
+                }
+
+
+                return rUser;
             } else {
                 throw new UnauthorizedException('Please confirm your email');
             }

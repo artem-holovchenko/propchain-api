@@ -20,11 +20,11 @@ export class AuthController {
     }
 
     @Post('/signin')
-    @ApiCreatedResponse({ type: TokenDto })
+    @ApiCreatedResponse({ type: CreatedUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     signIn(
         @Body() authLoginDto: AuthLoginDto,
-    ): Promise<{ accessToken: string }> {
+    ): Promise<IUser> {
         return this.authService.signIn(authLoginDto);
     }
 
