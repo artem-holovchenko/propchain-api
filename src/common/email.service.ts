@@ -4,6 +4,7 @@ import { IEmailToken } from 'src/email/interfaces/email-token.interface';
 import { IUser } from 'src/users/interfaces/user.interface';
 import { EmailTokenService } from './email-token.service';
 const mailgun = require("mailgun-js");
+const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 @Injectable()
 export class EmailService {
@@ -14,7 +15,10 @@ export class EmailService {
     constructor(
         private emailTokenService: EmailTokenService,
         private jwtService: JwtService,
-    ) { this.mg = mailgun({ apiKey: process.env.MG_API, domain: process.env.MG_DOMAIN }); }
+    ) {
+        this.mg = mailgun({ apiKey: process.env.MG_API, domain: process.env.MG_DOMAIN, });
+        mailchimp.setConfig({ apiKey: process.env.MC_API, server: process.env.MC_SERVER_PREFIX });
+    }
 
     async sendMessages(mailData): Promise<void> {
         const send = function (mailData) {
@@ -72,5 +76,15 @@ export class EmailService {
         await this.sendMessages(data);
 
         return token;
+    }
+
+    async subscribeUser(user: IUser): Promise<void> {
+        try {
+            await mailchimp.lists.getListMember(process.env.MC_LIST_ID, user.email);
+        } catch (e) {
+            if (e.status === 404) {
+                await mailchimp.lists.addListMember(process.env.MC_LIST_ID, { email_address: user.email, status: "pending" });
+            }
+        }
     }
 }
