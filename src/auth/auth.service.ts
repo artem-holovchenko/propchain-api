@@ -29,7 +29,10 @@ export class AuthService {
             if (gUser.emailIsVerified == true) {
                 const payload: JwtPayload = { email };
                 const accessToken: string = await this.jwtService.sign(payload);
-
+                let url = null;
+                if (gFile) {
+                    url = gFile.url;
+                }
                 const rUser = {
                     id: gUser.id,
                     firstName: gUser.firstName,
@@ -37,7 +40,7 @@ export class AuthService {
                     username: gUser.username,
                     phone: gUser.phone,
                     email: gUser.email,
-                    avatarUrl: gFile.url,
+                    avatarUrl: url,
                     role: gUser.role,
                     token: accessToken,
                 }

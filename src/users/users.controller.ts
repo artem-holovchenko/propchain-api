@@ -1,11 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Redirect, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { GetUserDto } from './dto/get-user.dto';
-import { UserEmailToken } from './dto/userEmailToken.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { UserIdDto } from './dto/userId.dto';
@@ -25,19 +24,35 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.User)
     @Post('/uploadAvatar')
+    @ApiCreatedResponse({description: 'Avatar successfully uploaded'})
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     @UseInterceptors(FileInterceptor('avatar', { dest: 'src/assets/images' }))
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                avatar: {
+                    type: 'string',
+                    format: 'binary',
+                },
+                id: { type: 'string' },
+            },
+        },
+    })
     uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto): Promise<void> {
         return this.usersService.setAvatar(UserIdDto, file);
     }
 
     @Post('/confirmPasswordChange/')
+    @ApiCreatedResponse({description: 'Password successfully changed'})
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     confirmResetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
         return this.usersService.confirmResetPassword(resetPasswordDto);
     }
 
     @Delete('/:email/delete')
+    @ApiOkResponse({description: 'User successfully deleted'})
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     deleteUserByEmail(@Param() userEmailDto: UserEmailDto): Promise<void> {
         return this.usersService.deleteUserByEmail(userEmailDto);

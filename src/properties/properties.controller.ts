@@ -30,8 +30,11 @@ export class PropertiesController {
             type: 'object',
             properties: {
                 propertyImages: {
-                    type: 'string',
-                    format: 'binary',
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                        format: 'binary'
+                    }
                 },
                 name: { type: 'string' },
                 description: { type: 'string' },
@@ -50,7 +53,6 @@ export class PropertiesController {
                 bedroom: { type: 'number' },
                 bath: { type: 'number' },
                 rented: { type: 'number' },
-                section8: { type: 'string' },
                 contractId: { type: 'string' },
             },
         },
