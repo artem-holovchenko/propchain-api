@@ -7,74 +7,74 @@ export class PropertiesDto {
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'string' })
+    @ApiProperty({ example: 'property', required: true, format: 'string' })
     name: string;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'string' })
+    @ApiProperty({ example: 'description', required: true, format: 'string' })
     description: string;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'string' })
+    @ApiProperty({ example: 'address', required: true, format: 'string' })
     address: string;
 
     @ApiProperty()
     coordinates: string;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 1000, required: true, format: 'number' })
     totalTokens: number;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 51.39, required: true, format: 'number' })
     tokenPrice: number;
 
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({ example: '2021-12-15', format: 'date' })
     startDate: Date;
 
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({ example: '2021-12-15', type: 'date' })
     endDate: Date;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'string' })
+    @ApiProperty({ example: 'Single Family', required: true, format: 'string' })
     type: string;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 1952, required: true, format: 'number' })
     constructionYear: number;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'string' })
+    @ApiProperty({ example: 'Mount Olivet', required: true, format: 'string' })
     neighborhood: string;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 500, required: true, format: 'number' })
     squareFeet: number;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 4.356, required: true, format: 'number' })
     lotSize: number;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 8, required: true, format: 'number' })
     totalUnits: number;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 1, required: true, format: 'number' })
     bedroom: number;
 
     @IsNotEmpty()
-    @ApiProperty({ required: true, format: 'number' })
+    @ApiProperty({ example: 1, required: true, format: 'number' })
     bath: number;
 
     @IsString()
-    @ApiProperty({ required: true, format: 'string' })
+    @ApiProperty({ example: 54.27, required: true, format: 'string' })
     rented: string;
 
     @IsString()

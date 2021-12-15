@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiInternalServerErrorResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { PropertiesDto } from './dto/properties.dto';
 import { IProperties } from './interfaces/properties.interface';
@@ -21,21 +21,24 @@ export class PropertiesController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get()
+    @ApiOkResponse({ type: PropertiesDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    getAllProperties(@Body()propPage: PropertyPageDto): Promise<IProperties[]> {
+    getAllProperties(@Query() propPage: PropertyPageDto): Promise<IProperties[]> {
         return this.propertiesService.getAllProperties(propPage);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/filters')
+    @ApiOkResponse({ type: PropertiesDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    getPropertiesWithFilters(@Body()filters: PropertyFilterDto): Promise<IProperties[]> {
+    getPropertiesWithFilters(@Query() filters: PropertyFilterDto): Promise<IProperties[]> {
         return this.propertiesService.getPropertiesWithFilters(filters);
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.Admin)
     @Post('/addProperty')
+    @ApiCreatedResponse({ type: PropertiesDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     @UseInterceptors(FilesInterceptor('propertyImages', 2, { dest: 'src/assets/images' }))
     @ApiConsumes('multipart/form-data')
@@ -50,23 +53,23 @@ export class PropertiesController {
                         format: 'binary'
                     }
                 },
-                name: { type: 'string' },
-                description: { type: 'string' },
-                address: { type: 'string' },
+                name: { example: 'property', type: 'string' },
+                description: { example: 'description', type: 'string' },
+                address: { example: 'address', type: 'string' },
                 coordinates: { type: 'string' },
-                totalTokens: { type: 'number' },
-                tokenPrice: { type: 'number' },
-                startDate: { type: 'date' },
-                endDate: { type: 'date' },
-                type: { type: 'string' },
-                constructionYear: { type: 'number' },
-                neighborhood: { type: 'string' },
-                squareFeet: { type: 'number' },
-                lotSize: { type: 'number' },
-                totalUnits: { type: 'number' },
-                bedroom: { type: 'number' },
-                bath: { type: 'number' },
-                rented: { type: 'number' },
+                totalTokens: { example: 1000, type: 'number' },
+                tokenPrice: { example: 51.39, type: 'number' },
+                startDate: { example: '2021-12-15', type: 'date' },
+                endDate: { example: '2022-01-15', type: 'date' },
+                type: { example: 'Single Family', type: 'string' },
+                constructionYear: { example: 1952, type: 'number' },
+                neighborhood: { example: 'Mount Olivet', type: 'string' },
+                squareFeet: { example: 500, type: 'number' },
+                lotSize: { example: 4.356, type: 'number' },
+                totalUnits: { example: 8, type: 'number' },
+                bedroom: { example: 1, type: 'number' },
+                bath: { example: 1, type: 'number' },
+                rented: { example: 54.27, type: 'number' },
                 contractId: { type: 'string' },
             },
         },
@@ -78,6 +81,7 @@ export class PropertiesController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.Admin)
     @Patch('/:id/editProperty')
+    @ApiOkResponse({ type: PropertiesDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     editProperty(@Param() propertyIdDto: PropertyIdDto, @Body() propertiesDto: PropertiesDto): Promise<IProperties> {
         return this.propertiesService.editProperty(propertyIdDto, propertiesDto);
@@ -86,6 +90,7 @@ export class PropertiesController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.Admin)
     @Delete('/:id/deleteProperty')
+    @ApiOkResponse({ description: 'Property successfully deleted' })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     deleteProperty(@Param() propertyIdDto: PropertyIdDto): Promise<void> {
         return this.propertiesService.deleteProperty(propertyIdDto);
