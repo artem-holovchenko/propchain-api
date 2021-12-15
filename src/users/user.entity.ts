@@ -1,7 +1,8 @@
-import { Table, Model, Column, Unique, HasOne } from 'sequelize-typescript';
+import { Table, Model, Column, Unique, HasOne, ForeignKey, HasMany, BelongsTo } from 'sequelize-typescript';
 import { DataTypes } from "sequelize";
 import { Role } from '../auth/role.enum';
 import { UserIdentities } from 'src/identities/user-identities.entity';
+import { Files } from 'src/identities/files.entity';
 
 @Table
 export class User extends Model {
@@ -45,9 +46,15 @@ export class User extends Model {
     @Column
     role: Role;
 
-    @Column
+    @ForeignKey(() => Files)
+    @Column({
+        type: DataTypes.UUID
+    })
     avatarFileId: string;
 
     @HasOne(() => UserIdentities)
     userIdenteties: UserIdentities;
+
+    @BelongsTo(() => Files)
+    file: Files;
 }

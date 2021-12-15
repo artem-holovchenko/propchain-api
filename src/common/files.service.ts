@@ -3,6 +3,7 @@ import { Files } from "src/identities/files.entity";
 import { UserIdentities } from "src/identities/user-identities.entity";
 import { IProperties } from "src/properties/interfaces/properties.interface";
 import { Properties } from "src/properties/properties.entity";
+import { IUserFiles } from "src/users/interfaces/user-files.interface";
 import { IUser } from "src/users/interfaces/user.interface";
 import { Status } from "src/users/status.enum";
 const cloudinary = require("cloudinary").v2;
@@ -21,6 +22,14 @@ export class FilesService {
             api_key: process.env.API_KEY,
             api_secret: process.env.API_SECRET,
         });
+    }
+
+    async getAvatar(user: IUser): Promise<IUserFiles> {
+        try {
+            return await this.filesDBRepository.findOne({ where: { id: user.avatarFileId } });
+        } catch (e) {
+            throw new Error('failed to find avatar');
+        }
     }
 
     async delFile(file: Express.Multer.File): Promise<any> {

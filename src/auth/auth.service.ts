@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from './auth.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/users/users.repository';
 import { IUser } from 'src/users/interfaces/user.interface';
+import { FilesService } from 'src/common/files.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,8 @@ export class AuthService {
         private authRepository: AuthRepository,
         private usersRepositoryAuth: UsersRepository,
         private jwtService: JwtService,
+        @Inject('UPLOAD_FILES_REPOSITORY')
+        private uploadFilesProviders: FilesService,
     ) { }
 
     async signUp(user: IUser): Promise<IUser> {
@@ -20,6 +23,7 @@ export class AuthService {
 
     async signIn(user: IUser): Promise<IUser> {
         const gUser = await this.usersRepositoryAuth.getUserByEmail(user);
+        const gFile = await this.uploadFilesProviders.getAvatar(gUser);
         const { email } = user;
         if (gUser && (await bcrypt.compare(user.password, gUser.password))) {
             if (gUser.emailIsVerified == true) {
@@ -33,7 +37,7 @@ export class AuthService {
                     username: gUser.username,
                     phone: gUser.phone,
                     email: gUser.email,
-                    avatarFileId: gUser.avatarFileId,
+                    avatarUrl: gFile.url,
                     role: gUser.role,
                     token: accessToken,
                 }

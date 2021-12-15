@@ -9,6 +9,7 @@ import { FilesService } from "src/common/files.service";
 import { UserIdentities } from "src/identities/user-identities.entity";
 import { IUserIdentity } from "src/identities/interfaces/user-identity.interface";
 import { IPasswordReset } from "./interfaces/userEmail.interface";
+import { Files } from "src/identities/files.entity";
 
 @Injectable()
 export class UsersRepository {
@@ -19,6 +20,8 @@ export class UsersRepository {
         @Inject('USER_IDENTITIES_REPOSITORY')
         private userIdentitiesDBRepository: typeof UserIdentities,
         private jwtService: JwtService,
+        @Inject('FILES_REPOSITORY')
+        private filesDBRepository: typeof Files,
         @Inject('UPLOAD_FILES_REPOSITORY')
         private uploadFilesProviders: FilesService,
     ) { }
@@ -59,7 +62,7 @@ export class UsersRepository {
                 ]
             }]
         });
-        
+
         return found;
     }
 
@@ -83,8 +86,9 @@ export class UsersRepository {
     async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
         try {
             const gFile = await this.uploadFilesProviders.uploadFile(file);
+            const gFileId = await this.filesDBRepository.findOne({ where: { url: gFile.url } })
             const { id } = user;
-            await this.usersDBRepository.update({ avatarFileId: gFile.name }, { where: { id: id } });
+            await this.usersDBRepository.update({ avatarFileId: gFileId.id }, { where: { id: id } });
         } catch {
             throw new InternalServerErrorException();
         }

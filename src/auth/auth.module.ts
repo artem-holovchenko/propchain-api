@@ -9,6 +9,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt-strategy';
 import { UsersModule } from 'src/users/users.module';
 import { EmailModule } from 'src/email/email.module';
+import { uploadFilesProviders } from 'src/identities/upload-files.providers';
+import { filesProviders } from 'src/identities/files.providers';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { EmailModule } from 'src/email/email.module';
     AuthRepository,
     AuthService,
     ...usersProviders,
+    ...uploadFilesProviders,
+    ...filesProviders,
   ],
   controllers: [AuthController],
   exports: [JwtStrategy, PassportModule],
