@@ -118,6 +118,19 @@ export class FilesService {
 
     }
 
+    async delAvatarDB(user: IUser) {
+        try {
+            const found = await this.filesDBRepository.findOne({ where: { id: user.avatarFileId } });
+            if (found) {
+                await cloudinary.uploader.destroy(found.name);
+                await this.filesDBRepository.destroy({ where: { id: found.id } });
+            }
+        } catch {
+            throw new InternalServerErrorException();
+        }
+
+    }
+
     async delPropertyFilesDB(property: IProperties) {
         try {
             const found = await this.filesDBRepository.findAll({

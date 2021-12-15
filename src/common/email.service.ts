@@ -36,7 +36,7 @@ export class EmailService {
 
     async sendEmailConfirm(user: IUser): Promise<void> {
         const token = await this.emailTokenService.generateEmailToken(user);
-        const href = `${process.env.HEROKU_URL}/email/verification/${token.token}`;
+        const href = `${process.env.HEROKU_URL}/email/verification/${token.emailToken}`;
         const data = {
             from: `Propchain <${process.env.MG_EMAIL}>`,
             to: user.email,
@@ -49,18 +49,18 @@ export class EmailService {
     }
 
     async resendConfirm(emailToken: IEmailToken): Promise<void> {
-        const email = await this.jwtService.decode(emailToken.token) as IUser;
+        const email = await this.jwtService.decode(emailToken.emailToken) as IUser;
         await this.sendEmailConfirm(email);
     }
 
     async resendPasswordChange(emailToken: IEmailToken): Promise<void> {
-        const email = await this.jwtService.decode(emailToken.token) as IUser;
+        const email = await this.jwtService.decode(emailToken.emailToken) as IUser;
         await this.sendResetPassword(email);
     }
 
     async sendResetPassword(user: IUser): Promise<any> {
         const token = await this.emailTokenService.generateEmailToken(user);
-        const href = `${process.env.CREATE_PASS_URL}/${token.token}`;
+        const href = `${process.env.CREATE_PASS_URL}/${token.emailToken}`;
         const data = {
             from: `Propchain <${process.env.MG_EMAIL}>`,
             to: user.email,

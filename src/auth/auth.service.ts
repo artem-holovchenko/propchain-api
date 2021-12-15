@@ -42,7 +42,7 @@ export class AuthService {
                     email: gUser.email,
                     avatarUrl: url,
                     role: gUser.role,
-                    token: accessToken,
+                    accessToken: accessToken,
                 }
 
 

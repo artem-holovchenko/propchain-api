@@ -1,3 +1,3 @@
 export interface IEmailToken {
-    token: string;
+    emailToken: string;
 }

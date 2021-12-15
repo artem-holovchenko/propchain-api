@@ -46,4 +46,8 @@ export class UsersService {
     async editUser(userId: IUser, user: IUser): Promise<IUser> {
         return this.usersRepository.editUser(userId, user);
     }
+
+    async deleteAvatar(userId: IUser): Promise<void> {
+        return this.usersRepository.deleteAvatar(userId);
+    }
 }

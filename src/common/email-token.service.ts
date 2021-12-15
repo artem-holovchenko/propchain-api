@@ -13,15 +13,15 @@ export class EmailTokenService {
         private jwtService: JwtService,
     ) { }
 
-    async generateEmailToken(user: IUser): Promise<{ token: string }> {
+    async generateEmailToken(user: IUser): Promise<{ emailToken: string }> {
         const { email } = user;
         const payload: JwtUserEmailPayload = { email };
-        const token: string = await this.jwtService.sign(payload);
-        return { token };
+        const emailToken: string = await this.jwtService.sign(payload);
+        return { emailToken };
     }
 
     async confirmEmail(emailToken: IEmailToken): Promise<void> {
-        const email = await this.jwtService.decode(emailToken.token) as IUser;
+        const email = await this.jwtService.decode(emailToken.emailToken) as IUser;
         await this.emailUsersRepository.updateEmail(email);
     }
 

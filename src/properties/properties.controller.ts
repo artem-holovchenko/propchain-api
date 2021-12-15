@@ -19,6 +19,20 @@ import { PropertyFilterDto } from './dto/property-filters.dto';
 export class PropertiesController {
     constructor(private propertiesService: PropertiesService) { }
 
+    @UseGuards(AuthGuard('jwt'))
+    @Get()
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    getAllProperties(@Body()propPage: PropertyPageDto): Promise<IProperties[]> {
+        return this.propertiesService.getAllProperties(propPage);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/filters')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    getPropertiesWithFilters(@Body()filters: PropertyFilterDto): Promise<IProperties[]> {
+        return this.propertiesService.getPropertiesWithFilters(filters);
+    }
+
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(Role.Admin)
     @Post('/addProperty')
@@ -75,21 +89,5 @@ export class PropertiesController {
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     deleteProperty(@Param() propertyIdDto: PropertyIdDto): Promise<void> {
         return this.propertiesService.deleteProperty(propertyIdDto);
-    }
-
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(Role.Admin)
-    @Get()
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    getAllProperties(@Body()propPage: PropertyPageDto): Promise<IProperties[]> {
-        return this.propertiesService.getAllProperties(propPage);
-    }
-
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(Role.User)
-    @Get('/filters')
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    getPropertiesWithFilters(@Body()filters: PropertyFilterDto): Promise<IProperties[]> {
-        return this.propertiesService.getPropertiesWithFilters(filters);
     }
 }

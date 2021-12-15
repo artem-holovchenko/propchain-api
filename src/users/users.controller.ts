@@ -21,8 +21,7 @@ import { EditUserDto } from './dto/edit-user.dto';
 export class UsersController {
     constructor(private usersService: UsersService) { }
 
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(Role.User)
+    @UseGuards(AuthGuard('jwt'))
     @Post('/uploadAvatar')
     @ApiCreatedResponse({description: 'Avatar successfully uploaded'})
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
@@ -51,13 +50,7 @@ export class UsersController {
         return this.usersService.confirmResetPassword(resetPasswordDto);
     }
 
-    @Delete('/:email/delete')
-    @ApiOkResponse({description: 'User successfully deleted'})
-    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-    deleteUserByEmail(@Param() userEmailDto: UserEmailDto): Promise<void> {
-        return this.usersService.deleteUserByEmail(userEmailDto);
-    }
-
+    @UseGuards(AuthGuard('jwt'))
     @Get()
     @ApiOkResponse({ type: GetUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
@@ -73,8 +66,7 @@ export class UsersController {
         return this.usersService.getWaitingUsers();
     }
 
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(Role.Admin)
+    @UseGuards(AuthGuard('jwt'))
     @Get('/:id')
     @ApiOkResponse({ type: GetUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
@@ -82,6 +74,8 @@ export class UsersController {
         return this.usersService.getUserById(userIdDto);
     }
 
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.Admin)
     @Patch('/:id/role')
     @ApiOkResponse({ type: GetUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
@@ -91,7 +85,23 @@ export class UsersController {
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(Role.User)
+    @Roles(Role.Admin)
+    @Delete('/:email/delete')
+    @ApiOkResponse({description: 'User successfully deleted'})
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    deleteUserByEmail(@Param() userEmailDto: UserEmailDto): Promise<void> {
+        return this.usersService.deleteUserByEmail(userEmailDto);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('/:id/deleteAvatar')
+    @ApiOkResponse({description: 'Avatar successfully deleted'})
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    deleteAvatar(@Param() userIdDto: UserIdDto): Promise<void> {
+        return this.usersService.deleteAvatar(userIdDto);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
     @Patch('/:id/editUser')
     @ApiOkResponse({ type: GetUserDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })

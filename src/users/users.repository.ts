@@ -95,7 +95,23 @@ export class UsersRepository {
     }
 
     async deleteUserByEmail(user: IUser): Promise<void> {
-        await this.usersDBRepository.destroy({ where: { email: user.email } });
+        try {
+            const gUser = await this.getUserByEmail(user);
+            await this.usersDBRepository.destroy({ where: { email: user.email } });
+            await this.uploadFilesProviders.delAvatarDB(gUser);
+        } catch {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async deleteAvatar(user: IUser): Promise<void> {
+        try {
+            const gUser = await this.getUserById(user);
+            await this.usersDBRepository.update({ avatarFileId: null }, { where: { id: user.id } });
+            await this.uploadFilesProviders.delAvatarDB(gUser);
+        } catch {
+            throw new InternalServerErrorException();
+        }
     }
 
     async getAllUsers(): Promise<IUser[]> {
