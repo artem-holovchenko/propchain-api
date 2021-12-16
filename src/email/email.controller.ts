@@ -10,7 +10,7 @@ import { UserEmailDto } from './dto/user-email.dto';
 export class EmailController {
     constructor(private emailTokenService: EmailTokenService, private emailService: EmailService) { }
 
-    @Get('/verification/:token')
+    @Get('/verification/:emailToken')
     @Redirect(process.env.SIGN_IN_URL)
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
     confirmEmail(@Param() emailTokenDto: EmailTokenDto): Promise<void> {

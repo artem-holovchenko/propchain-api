@@ -48,7 +48,7 @@ export class AuthRepository {
                 phone: nUser.phone,
                 email: nUser.email,
                 role: nUser.role,
-                token: accessToken,
+                emailToken: accessToken,
             }
 
             return rUser;
