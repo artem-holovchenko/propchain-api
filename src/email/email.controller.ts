@@ -34,4 +34,10 @@ export class EmailController {
     confirmResetPassword(@Body() userEmailDto: UserEmailDto): Promise<any> {
         return this.emailService.sendResetPassword(userEmailDto);
     }
+
+    @Post('/subscribe')
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+    subscribeUser(@Body() userEmailDto: UserEmailDto): Promise<any> {
+        return this.emailService.subscribeUser(userEmailDto);
+    }
 }
