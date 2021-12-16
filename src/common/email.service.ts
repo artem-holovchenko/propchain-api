@@ -82,8 +82,12 @@ export class EmailService {
         try {
             await mailchimp.lists.getListMember(process.env.MC_LIST_ID, user.email);
         } catch (e) {
-            if (e.status === 404) {
-                await mailchimp.lists.addListMember(process.env.MC_LIST_ID, { email_address: user.email, status: "pending" });
+            try {
+                if (e.status === 404) {
+                    await mailchimp.lists.addListMember(process.env.MC_LIST_ID, { email_address: user.email, status: "pending" });
+                }
+            } catch (e) {
+                throw new InternalServerErrorException();
             }
         }
     }
