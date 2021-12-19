@@ -83,12 +83,20 @@ export class UsersRepository {
         await this.usersDBRepository.update({ password: hashedPassword, salt: gen_salt }, { where: { email: gId.email } });
     }
 
-    async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
+    async setAvatar(user: IUser, file: Express.Multer.File): Promise<string> {
         try {
+            const gUser = await this.getUserById(user);
+            
+            if (gUser.avatarFileId != null) {
+                await this.deleteAvatar(gUser);
+            }
+
             const gFile = await this.uploadFilesProviders.uploadFile(file);
             const gFileId = await this.filesDBRepository.findOne({ where: { url: gFile.url } })
             const { id } = user;
             await this.usersDBRepository.update({ avatarFileId: gFileId.id }, { where: { id: id } });
+
+            return gFile.url;
         } catch {
             throw new InternalServerErrorException();
         }

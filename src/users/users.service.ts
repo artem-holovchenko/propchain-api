@@ -39,7 +39,7 @@ export class UsersService {
         return this.usersRepository.getAllUsers();
     }
 
-    async setAvatar(user: IUser, file: Express.Multer.File): Promise<void> {
+    async setAvatar(user: IUser, file: Express.Multer.File): Promise<string> {
         return this.usersRepository.setAvatar(user, file);
     }
 

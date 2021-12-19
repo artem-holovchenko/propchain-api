@@ -39,7 +39,7 @@ export class UsersController {
             },
         },
     })
-    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto): Promise<void> {
+    uploadAvatar(@UploadedFile() file: Express.Multer.File, @Body() UserIdDto: UserIdDto): Promise<string> {
         return this.usersService.setAvatar(UserIdDto, file);
     }
 
