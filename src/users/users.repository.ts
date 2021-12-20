@@ -43,7 +43,10 @@ export class UsersRepository {
                 'isUsaCitizen',
                 'avatarFileId',
             ], where: { id: user.id }
-        });
+        , include: {
+            model: Files,
+            attributes:['url']
+        }});
         if (!found) {
             throw new NotFoundException(`User with id: ${user.id} not found`);
         }
@@ -86,7 +89,7 @@ export class UsersRepository {
     async setAvatar(user: IUser, file: Express.Multer.File): Promise<string> {
         try {
             const gUser = await this.getUserById(user);
-            
+
             if (gUser.avatarFileId != null) {
                 await this.deleteAvatar(gUser);
             }
