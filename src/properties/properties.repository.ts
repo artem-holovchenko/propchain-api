@@ -78,7 +78,7 @@ export class PropertiesRepository {
 
     async getAllProperties(propPage: PropertyPageDto): Promise<IProperties[]> {
         const { page } = propPage;
-        let propLimit = 5;
+        let propLimit = 8;
         let propCount = page * propLimit - propLimit;
         return await this.propertiesDBRepository.findAll({ offset: propCount, limit: propLimit, include: { model: Files, through: { attributes: ['isMain'] } } });
     }
@@ -100,7 +100,7 @@ export class PropertiesRepository {
             sortOrder,
         } = filters;
 
-        let propLimit = 5;
+        let propLimit = 8;
         let propCount = page * propLimit - propLimit;
 
         let where = {};
