@@ -19,7 +19,6 @@ import { PropertyFilterDto } from './dto/property-filters.dto';
 export class PropertiesController {
     constructor(private propertiesService: PropertiesService) { }
 
-    @UseGuards(AuthGuard('jwt'))
     @Get()
     @ApiOkResponse({ type: PropertiesDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
@@ -27,7 +26,6 @@ export class PropertiesController {
         return this.propertiesService.getAllProperties(propPage);
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Get('/filters')
     @ApiOkResponse({ type: PropertiesDto })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
