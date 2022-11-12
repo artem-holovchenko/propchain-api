@@ -1,18 +1,39 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { usersProviders } from './users.providers';
-import { UsersRepository } from './users.repository';
+import { usersProviders } from '../users/users.providers';
+import { AuthRepository } from './auth.repository';
 import { DatabaseModule } from 'src/database.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt-strategy';
+import { UsersModule } from 'src/users/users.module';
+import { EmailModule } from 'src/email/email.module';
+import { uploadFilesProviders } from 'src/identities/upload-files.providers';
+import { filesProviders } from 'src/identities/files.providers';
 
 @Module({
   imports: [
+    UsersModule,
+    EmailModule,
     DatabaseModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.SECRET,
+      signOptions: {
+        expiresIn: process.env.EXP_TIME,
+      },
+    }),
   ],
   providers: [
-    UsersRepository,
+    JwtStrategy,
+    AuthRepository,
     AuthService,
-    ...usersProviders,],
+    ...usersProviders,
+    ...uploadFilesProviders,
+    ...filesProviders,
+  ],
   controllers: [AuthController],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule { }
